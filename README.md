@@ -1,58 +1,58 @@
 # GoldenPath · Arquitectura de Plataformas
 
-Base de infraestructura para la TVP de autoservicio de ARTI-4219, derivada de los recursos reutilizables de reference. Objetivo del proyecto: un desarrollador solicita un microservicio con PostgreSQL en Backstage; GitHub, Argo CD y Crossplane lo materializan en AWS.
+Plataforma de autoservicio para MATI: un desarrollador completa **nombre, equipo, tamaño y descripción** en Backstage y obtiene un repositorio privado, microservicio, PostgreSQL y catálogo, administrados mediante GitOps.
 
-**Estado: preparación y validación sin AWS. No se ha desplegado esta plataforma.** El repositorio contiene los cimientos modulares y CI; el Golden Path todavía está pendiente. La configuración bloquea el despliegue por defecto (`deployment_enabled = false`). No existe un workflow de apply ni de destroy.
+**Implementación preparada y validada antes del despliegue. No se ha desplegado en AWS.** Terraform tiene un bloqueo por defecto y los workflows no tienen credenciales AWS ni ejecutan despliegues. El plan real consultó AWS: **102 recursos nuevos, cero modificaciones y cero eliminaciones**. Eso no garantiza permisos de creación ni el funcionamiento de las integraciones en AWS; consulta [evidencias y límites](docs/VALIDACION.md).
 
-## Reutilización
+## Qué incluye
 
-| Módulo | Alcance preparado |
-|---|---|
-| `network` | VPC dedicada, NAT, subredes públicas, privadas de aplicación y aisladas de datos |
-| `eks` | Clúster, nodos, roles, clave KMS propia, accesos explícitos y add-ons parametrizados |
-| `rds-postgres` | Una RDS privada para Backstage, cifrada, respaldada y con contraseña administrada por AWS |
-| `ecr` | Repositorios nuevos para Backstage y servicio v0, tags inmutables y análisis de imágenes |
-| `portal-edge` | API Gateway HTTP → VPC Link → NLB interno → NodePort; módulo opcional, desactivado |
-| `pod-identity` | Rol y asociación por namespace/service account; falta definir políticas de los controladores |
+- **Terraform:** seis módulos adaptados de reference; VPC independiente, EKS, RDS del portal, ECR, entrada HTTPS mediante API Gateway REST/WAF/NLB y roles Pod Identity. Backend S3 separado listo para bootstrap.
+- **Backstage:** aplicación compilable, autenticación GitHub, catálogo, formulario de cuatro campos y acciones que validan identidad, crean el servicio y esperan la política del PR antes de fusionarlo.
+- **GitOps:** Argo CD, proyectos con permisos separados, ApplicationSets, Crossplane v2, Composition de PostgreSQL con dos tamaños, External Secrets, Kyverno e Istio ambient.
+- **Servicio v0:** Node.js/PostgreSQL, SELECT 1 con TLS verificado, disponibilidad dependiente de la base y recuperación comprobada.
+- **CI:** Terraform, contratos de solicitudes, render de Helm/Crossplane, compilación de Backstage, Scaffolder real en dry-run y pruebas con PostgreSQL real en Docker.
 
-La RDS del piloto será propiedad de **Crossplane**. Terraform prepara únicamente la base del portal y los cimientos. El módulo Pod Identity está disponible para integración, aún no instanciado en el root.
+La entrada pública del portal usa **la URL HTTPS de API Gateway**, sin dominio propio. OAuth se configura después de conocer esa URL. Argo CD y los servicios del piloto permanecen internos.
 
 ## Estructura
 
-```text
-terraform/
-  modules/                 # seis módulos con variables y outputs
-  tests/                   # contratos con proveedor AWS simulado
-  main.tf                  # composición del entorno de desarrollo
-  terraform.tfvars.example # parámetros pendientes; despliegue deshabilitado
-  backend.tf.example       # backend nuevo e independiente, aún no configurado
-.github/workflows/ci.yml    # formato, validación y pruebas sin AWS
-scripts/validate.sh         # mismo proceso local y en GitHub Actions
-reference/legacy/          # valores Helm y CI originales, solo referencia
-platform/                  # contratos y trabajo pendiente de GitOps
-services/service-v0/       # contrato de la aplicación futura
-catalog/                   # contrato del futuro catálogo
-docs/                     # inventario, decisiones, pendientes y demo
-```
+| Ruta | Contenido |
+|---|---|
+| `terraform/` | Entorno, módulos, pruebas y bootstrap del estado |
+| `backstage/` | Portal, catálogo y plantilla del Golden Path |
+| `platform/` | Charts GitOps, versiones y esquemas de proveedores |
+| `gitops/tenants/` | Solicitudes de infraestructura y registros de servicios |
+| `services/service-v0/` | Imagen genérica y pruebas de PostgreSQL |
+| `scripts/` | Validaciones, plan y operaciones futuras con bloqueo explícito |
+| `reference/legacy/` | Referencias originales; no se despliegan |
 
 ## Validación local
 
-Requiere Terraform 1.16.2, Python 3 y Bash. Descargar proveedores requiere Internet; no requiere una cuenta AWS.
+Requiere Terraform 1.16.2, Node 24.21.0, Python 3.10+, Helm 4.3.0, Crossplane CLI 2.5.0 y Docker. Las descargas requieren Internet; las pruebas de CI no requieren AWS.
 
 ```bash
 ./scripts/validate.sh
+python3 -m venv .venv
+.venv/bin/pip install -r scripts/requirements.txt
+.venv/bin/python -m unittest discover -s tests -v
+.venv/bin/python scripts/validate-platform.py
+(cd services/service-v0 && npm ci && npm test)
+python3 scripts/test-service-integration.py
+(cd backstage && node .yarn/releases/yarn-4.13.0.cjs install --immutable && node .yarn/releases/yarn-4.13.0.cjs tsc && node .yarn/releases/yarn-4.13.0.cjs build:backend)
+PYTHON_BIN="$PWD/.venv/bin/python" ./scripts/test-backstage.sh
 ```
 
-El script ejecuta `init -backend=false`, `validate` y pruebas con `mock_provider "aws"` y `command = plan`. No ejecuta un plan contra AWS, no aplica recursos y no usa kubectl. El resultado no demuestra que una versión de EKS/RDS esté disponible ni que IAM permita desplegar.
+Para explorar el portal localmente: `cd backstage && node .yarn/releases/yarn-4.13.0.cjs start`. El modo local usa SQLite, usuario invitado y destinos ficticios; permite probar el formulario sin publicar servicios.
 
-## Documentación de trabajo
+## Documentación
 
-- [Inventario y decisiones de reutilización](docs/INVENTARIO-REUTILIZACION.md)
-- [Procedencia exacta y hashes](docs/PROVENANCE.json)
-- [Arquitectura y límites de esta base](docs/ARQUITECTURA.md)
-- [CI/CD revisado y siguiente implementación](docs/CI-CD.md)
-- [Pendientes antes de desplegar](docs/PREPARACION-DESPLIEGUE.md)
-- [Guion y criterios para el video](docs/DEMO.md)
-- [Presentación de referencia](https://rubiod1.github.io/payments-network-platform-engineering/)
+- [Cobertura de la guía y rúbrica](docs/COBERTURA-PROYECTO.md)
+- [Arquitectura y decisiones](docs/ARQUITECTURA.md)
+- [Preparación y secuencia del primer despliegue](docs/PREPARACION-DESPLIEGUE.md)
+- [CI y políticas GitOps](docs/CI-CD.md)
+- [Validación realizada y límites](docs/VALIDACION.md)
+- [Guion del video](docs/DEMO.md)
+- [Inventario de reutilización](docs/INVENTARIO-REUTILIZACION.md) y [procedencia exacta](docs/PROVENANCE.json)
+- [Presentación de contexto](https://rubiod1.github.io/payments-network-platform-engineering/)
 
-El repositorio se mantiene privado, al igual que su origen. No se copiaron estados, contraseñas, claves, dumps, recursos retenidos ni credenciales de reference. Los valores Helm de referencia no son la configuración activa de GoldenPath.
+Repositorio privado independiente de reference. No contiene estados, contraseñas ni claves privadas. Los archivos PEM incluidos son certificados públicos de confianza de Amazon RDS.

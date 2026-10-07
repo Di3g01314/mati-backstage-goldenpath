@@ -1,0 +1,25 @@
+aws:
+  accountId: '111111111111'
+  region: us-east-1
+  resourcePrefix: goldenpath-dev
+git:
+  repoURL: https://github.com/Di3g01314/mati-backstage-goldenpath
+  revision: main
+  owner: Di3g01314
+  repo: mati-backstage-goldenpath
+clusterName: goldenpath-dev-eks
+portalUrl: https://example.execute-api.us-east-1.amazonaws.com/dev
+githubSecretArn: arn:aws:secretsmanager:us-east-1:111111111111:secret:goldenpath-dev/github-app-example
+backstage:
+  image: 111111111111.dkr.ecr.us-east-1.amazonaws.com/goldenpath-dev/backstage:v1
+  databaseHost: backstage.example.rds.amazonaws.com
+  databaseSecretArn: arn:aws:secretsmanager:us-east-1:111111111111:secret:rds-example
+serviceImage: 111111111111.dkr.ecr.us-east-1.amazonaws.com/goldenpath-dev/service-v0:v1
+pilot:
+  namespace: equipo-piloto
+  subnetGroup: goldenpath-dev-pilot
+  databaseSecurityGroup: sg-0123456789abcdef0
+  workloadSecurityGroup: sg-0123456789abcdef1
+  postgresVersion: '16.15'
+stage: all
+awsResources: true

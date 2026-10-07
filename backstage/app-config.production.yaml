@@ -1,0 +1,67 @@
+app:
+  baseUrl: ${PORTAL_URL}
+backend:
+  baseUrl: ${PORTAL_URL}
+  cors:
+    origin: ${PORTAL_ORIGIN}
+    methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+    credentials: true
+  database:
+    client: pg
+    connection:
+      host: ${POSTGRES_HOST}
+      port: 5432
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
+      ssl:
+        rejectUnauthorized: true
+        ca:
+          $file: /app/certs/global-bundle.pem
+integrations:
+  github:
+    - host: github.com
+      token: ${GITHUB_TOKEN}
+
+auth:
+  environment: production
+  session:
+    secret: ${AUTH_SESSION_SECRET}
+  providers:
+    github:
+      production:
+        clientId: ${GITHUB_CLIENT_ID}
+        clientSecret: ${GITHUB_CLIENT_SECRET}
+        signIn:
+          resolvers:
+            - resolver: usernameMatchingUserEntityName
+catalog:
+  locations:
+    - type: file
+      target: /app/catalog/entities.yaml
+    - type: file
+      target: /app/templates/microservice/template.yaml
+kubernetes:
+  serviceLocatorMethod: {type: multiTenant}
+  clusterLocatorMethods:
+    - type: config
+      clusters:
+        - name: goldenpath
+          url: https://kubernetes.default.svc
+          authProvider: serviceAccount
+          skipTLSVerify: false
+          caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          customResources:
+            - group: platform.goldenpath.io
+              apiVersion: v1alpha1
+              plural: postgresqlinstances
+goldenpath:
+  localMode: false
+  githubOwner: ${GITHUB_OWNER}
+  gitopsRepo: ${GITOPS_REPO}
+  serviceImage: ${SERVICE_IMAGE}
+  teams:
+    piloto:
+      namespace: equipo-piloto
+      costCenter: mati-platform
+      owner: group:default/piloto
+      members: [user:default/di3g01314]

@@ -1,0 +1,9 @@
+{
+  "piloto": {
+    "namespace": "equipo-piloto",
+    "costCenter": "mati-platform",
+    "owner": "piloto",
+    "githubOwner": "Di3g01314",
+    "repositoryPrefix": "gp-piloto-"
+  }
+}

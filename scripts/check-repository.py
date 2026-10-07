@@ -1,10 +1,12 @@
 """Repository checks without AWS credentials or network calls."""
 from pathlib import Path
 import re
+import subprocess
 root = Path(__file__).resolve().parents[1]
 errors = []
-for p in root.rglob("*"):
-    if not p.is_file() or any(x in p.parts for x in (".git", ".terraform", "__pycache__")):
+for name in subprocess.check_output(["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"], cwd=root).decode().split("\0"):
+    p = root / name
+    if not name or not p.is_file() or name.startswith("backstage/.yarn/releases/"):
         continue
     text = p.read_text(errors="replace")
     rel = p.relative_to(root)

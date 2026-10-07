@@ -1,0 +1,114 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: microservicio-postgresql
+  title: Microservicio con PostgreSQL
+  description: Tu repositorio, servicio y base de datos en desarrollo. Cuatro campos y ningún ticket.
+  tags: [goldenpath, aws, postgresql]
+spec:
+  owner: group:default/piloto
+  type: service
+  parameters:
+    - title: Crea tu servicio
+      required: [name, team, size, description]
+      properties:
+        name:
+          title: Nombre del servicio
+          type: string
+          pattern: '^[a-z][a-z0-9-]{2,19}$'
+          description: Entre 3 y 20 caracteres, minúsculas, números y guiones.
+        team:
+          title: Equipo dueño
+          type: string
+          enum: [piloto]
+          enumNames: [Equipo piloto]
+          default: piloto
+        size:
+          title: Tamaño de PostgreSQL
+          type: string
+          enum: [pequena, mediana]
+          enumNames: [Pequeña · desarrollo, Mediana · desarrollo]
+          default: pequena
+        description:
+          title: ¿Qué hace tu servicio?
+          type: string
+          minLength: 1
+          maxLength: 160
+          pattern: '^[^\n\r]+$'
+  steps:
+    - id: context
+      name: Validar equipo y contrato
+      action: goldenpath:context
+      input:
+        name: ${{ parameters.name }}
+        team: ${{ parameters.team }}
+        size: ${{ parameters.size }}
+        description: ${{ parameters.description }}
+    - id: skeleton
+      name: Preparar tu microservicio
+      action: fetch:template
+      input:
+        url: ./skeleton
+        targetPath: ./service
+        values:
+          name: ${{ steps.context.output.repoName }}
+          namespace: ${{ steps.context.output.namespace }}
+          owner: ${{ steps.context.output.owner }}
+          githubOwner: ${{ steps.context.output.githubOwner }}
+          description: ${{ parameters.description }}
+          image: ${{ steps.context.output.serviceImage }}
+    - id: repo
+      name: Crear repositorio privado
+      action: publish:github
+      input:
+        sourcePath: ./service
+        repoUrl: github.com?owner=${{ steps.context.output.githubOwner }}&repo=${{ steps.context.output.repoName }}
+        repoVisibility: private
+        defaultBranch: main
+        description: ${{ parameters.description }}
+    - id: infrastructure
+      name: Preparar solicitud de infraestructura
+      action: fetch:template
+      input:
+        url: ./infra
+        targetPath: ./gitops
+        values:
+          name: ${{ steps.context.output.repoName }}
+          namespace: ${{ steps.context.output.namespace }}
+          owner: ${{ steps.context.output.owner }}
+          costCenter: ${{ steps.context.output.costCenter }}
+          githubOwner: ${{ steps.context.output.githubOwner }}
+          size: ${{ parameters.size }}
+    - id: pr
+      name: Validar cambios en GitOps
+      action: publish:github:pull-request
+      input:
+        repoUrl: github.com?owner=${{ steps.context.output.githubOwner }}&repo=${{ steps.context.output.gitopsRepo }}
+        branchName: goldenpath/${{ steps.context.output.repoName }}
+        sourcePath: ./gitops
+        targetPath: gitops/tenants/piloto/${{ steps.context.output.repoName }}
+        title: 'GoldenPath: ${{ steps.context.output.repoName }}'
+        description: Solicitud estándar de desarrollo. La CI valida el contrato antes de fusionar.
+    - id: merge
+      name: Activar reconciliación automática
+      action: goldenpath:merge
+      input:
+        pullRequest: ${{ steps.pr.output.pullRequestNumber }}
+        repoName: ${{ steps.context.output.repoName }}
+    - id: catalog
+      name: Registrar servicio en el catálogo
+      action: goldenpath:register
+      input:
+        repoName: ${{ steps.context.output.repoName }}
+  output:
+    links:
+      - title: Tu repositorio
+        url: ${{ steps.repo.output.remoteUrl }}
+      - title: Solicitud GitOps
+        url: ${{ steps.pr.output.remoteUrl }}
+      - title: Ver en el catálogo
+        icon: catalog
+        entityRef: ${{ steps.catalog.output.entityRef }}
+    text:
+      - title: ¿Qué sigue?
+        content: Argo CD y Crossplane están reconciliando tu servicio. El catálogo mostrará su estado; crear RDS puede tardar varios minutos.

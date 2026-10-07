@@ -22,3 +22,8 @@ variable "node_security_group_id" {
   description = "Worker SG allowed from NLB on port 30080."
   type        = string
 }
+
+variable "vpc_cidr" {
+  type        = string
+  description = "VPC CIDR for the private transport; NLB has no public listener."
+}

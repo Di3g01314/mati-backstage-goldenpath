@@ -5,15 +5,15 @@ aws_region = "us-east-1"
 resource_prefix = "goldenpath-dev"
 owner = "equipo-plataforma"
 cost_center = "mati-arquitectura-plataformas"
-kubernetes_version = "REPLACE_WITH_SUPPORTED_VERSION"
+kubernetes_version = "1.35"
 eks_addon_versions = {
-  coredns = "REPLACE_WITH_COMPATIBLE_VERSION"
-  kube-proxy = "REPLACE_WITH_COMPATIBLE_VERSION"
-  vpc-cni = "REPLACE_WITH_COMPATIBLE_VERSION"
-  eks-pod-identity-agent = "REPLACE_WITH_COMPATIBLE_VERSION"
+  coredns = "v1.13.2-eksbuild.31"
+  kube-proxy = "v1.35.3-eksbuild.29"
+  vpc-cni = "v1.22.4-eksbuild.3"
+  eks-pod-identity-agent = "v1.3.10-eksbuild.3"
 }
 eks_admin_principal_arns = { platform = "arn:aws:iam::000000000000:role/REPLACE_WITH_ADMIN_ROLE" }
 eks_public_access_cidrs = []
-postgres_engine_version = "REPLACE_WITH_POSTGRES_16_MINOR"
+postgres_engine_version = "16.15"
 final_snapshot_suffix = "REPLACE_WITH_UNIQUE_SUFFIX"
-enable_portal_edge = false
+enable_portal_edge = true

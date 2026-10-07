@@ -1,0 +1,121 @@
+{{- if or (eq .Values.stage "all") (eq .Values.stage "resources") }}
+apiVersion: aws.m.upbound.io/v1beta1
+kind: ClusterProviderConfig
+metadata: {name: goldenpath}
+spec:
+  credentials: {source: PodIdentity}
+---
+apiVersion: apiextensions.crossplane.io/v2
+kind: CompositeResourceDefinition
+metadata:
+  name: postgresqlinstances.platform.goldenpath.io
+  annotations: {argocd.argoproj.io/sync-wave: "-5"}
+spec:
+  scope: Namespaced
+  group: platform.goldenpath.io
+  names: {kind: PostgreSQLInstance, plural: postgresqlinstances}
+  defaultCompositionRef: {name: goldenpath-postgresql}
+  enforcedCompositionRef: {name: goldenpath-postgresql}
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              required: [size]
+              properties:
+                size: {type: string, enum: [pequena, mediana]}
+            status:
+              type: object
+              properties:
+                databaseEndpoint: {type: string}
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata: {name: goldenpath-postgresql}
+spec:
+  compositeTypeRef: {apiVersion: platform.goldenpath.io/v1alpha1, kind: PostgreSQLInstance}
+  mode: Pipeline
+  pipeline:
+    - step: rds
+      functionRef: {name: function-patch-and-transform}
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        resources:
+          - name: database
+            base:
+              apiVersion: rds.aws.m.upbound.io/v1beta1
+              kind: Instance
+              spec:
+                managementPolicies: [Observe, Create, Update, LateInitialize]
+                providerConfigRef: {name: goldenpath, kind: ClusterProviderConfig}
+                forProvider:
+                  region: {{ .Values.aws.region }}
+                  engine: postgres
+                  engineVersion: {{ .Values.pilot.postgresVersion | quote }}
+                  instanceClass: db.t4g.micro
+                  allocatedStorage: 20
+                  storageType: gp3
+                  storageEncrypted: true
+                  publiclyAccessible: false
+                  multiAz: false
+                  backupRetentionPeriod: 7
+                  deletionProtection: true
+                  applyImmediately: true
+                  dbName: app
+                  username: app_admin
+                  port: 5432
+                  autoGeneratePassword: true
+                  passwordSecretRef: {name: replaced-by-patch, key: password}
+                  dbSubnetGroupName: {{ .Values.pilot.subnetGroup }}
+                  vpcSecurityGroupIds: [{{ .Values.pilot.databaseSecurityGroup | quote }}]
+                  tags:
+                    Project: {{ .Values.aws.resourcePrefix }}
+                    Environment: dev
+                    ManagedBy: crossplane
+                writeConnectionSecretToRef: {name: replaced-by-patch}
+            patches:
+              - type: FromCompositeFieldPath
+                fromFieldPath: metadata.name
+                toFieldPath: metadata.annotations[crossplane.io/external-name]
+                transforms:
+                  - type: string
+                    string: {type: Format, fmt: '{{ .Values.aws.resourcePrefix }}-%s'}
+              - type: FromCompositeFieldPath
+                fromFieldPath: metadata.name
+                toFieldPath: spec.forProvider.passwordSecretRef.name
+                transforms:
+                  - type: string
+                    string: {type: Format, fmt: '%s-password'}
+              - type: FromCompositeFieldPath
+                fromFieldPath: metadata.name
+                toFieldPath: spec.writeConnectionSecretToRef.name
+                transforms:
+                  - type: string
+                    string: {type: Format, fmt: '%s-connection'}
+              - type: FromCompositeFieldPath
+                fromFieldPath: metadata.labels[platform.goldenpath.io/owner]
+                toFieldPath: spec.forProvider.tags.Owner
+                policy: {fromFieldPath: Required}
+              - type: FromCompositeFieldPath
+                fromFieldPath: metadata.labels[platform.goldenpath.io/cost-center]
+                toFieldPath: spec.forProvider.tags.CostCenter
+                policy: {fromFieldPath: Required}
+              - type: FromCompositeFieldPath
+                fromFieldPath: metadata.labels[backstage.io/kubernetes-id]
+                toFieldPath: metadata.labels[backstage.io/kubernetes-id]
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.size
+                toFieldPath: spec.forProvider.instanceClass
+                transforms:
+                  - type: map
+                    map: {pequena: db.t4g.micro, mediana: db.t4g.small}
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.atProvider.address
+                toFieldPath: status.databaseEndpoint
+{{- end }}

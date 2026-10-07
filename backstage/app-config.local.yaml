@@ -1,0 +1,14 @@
+auth:
+  providers:
+    guest: {}
+goldenpath:
+  localMode: true
+  githubOwner: local-only
+  gitopsRepo: local-only
+  serviceImage: goldenpath-service-v0:local
+  teams:
+    piloto:
+      namespace: equipo-piloto
+      costCenter: mati-platform
+      owner: group:default/piloto
+      members: [user:development/guest]

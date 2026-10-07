@@ -26,6 +26,7 @@ module "eks" {
   addon_versions       = var.eks_addon_versions
   admin_principal_arns = var.eks_admin_principal_arns
   public_access_cidrs  = var.eks_public_access_cidrs
+  node_instance_types  = ["t3.large"]
   depends_on           = [module.network]
 }
 module "backstage_database" {
@@ -45,6 +46,7 @@ module "ecr" {
 module "portal_edge" {
   count                       = var.enable_portal_edge ? 1 : 0
   source                      = "./modules/portal-edge"
+  vpc_cidr                    = "10.60.0.0/16"
   resource_prefix             = var.resource_prefix
   vpc_id                      = module.network.vpc_id
   private_subnet_ids          = module.network.private_subnet_ids
