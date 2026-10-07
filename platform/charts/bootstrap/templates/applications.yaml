@@ -88,7 +88,9 @@ spec:
       releaseName: kyverno
       valuesObject:
         kyverno-api:
-          # A real label avoids perpetual drift from an empty map pruned by the API server.
+          # Nonempty metadata maps avoid drift when the API server prunes empty maps.
+          annotations:
+            goldenpath.io/managed-by: platform
           labels:
             goldenpath.io/managed-by: platform
         admissionController:
