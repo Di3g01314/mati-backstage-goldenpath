@@ -1,6 +1,6 @@
 # Operación, diagnóstico y cierre
 
-Runbook para el operador del piloto. No se ha desplegado AWS. La preparación del primer arranque está en [PREPARACION-DESPLIEGUE](PREPARACION-DESPLIEGUE.md); esta guía explica cómo observar y recuperar el entorno una vez exista.
+Runbook para el operador del piloto. La infraestructura AWS está activa; el portal sigue pendiente de completar la configuración GitHub y validar su funcionamiento. Consultar el [registro de despliegue](DESPLIEGUE-AWS.md) para el estado vigente. La secuencia del primer arranque está en [PREPARACION-DESPLIEGUE](PREPARACION-DESPLIEGUE.md); esta guía explica cómo observar y recuperar el entorno.
 
 ## Acceso y primera comprobación
 
