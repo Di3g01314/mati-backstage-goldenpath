@@ -9,7 +9,7 @@ output "portal_url" { value = try(module.portal_edge[0].api_gateway_url, null) }
 output "platform_configuration" {
   value = {
     aws             = { accountId = var.aws_account_id, region = var.aws_region, resourcePrefix = var.resource_prefix }
-    git             = { repoURL = "https://github.com/Di3g01314/mati-backstage-goldenpath", revision = "main", owner = "Di3g01314", repo = "mati-backstage-goldenpath" }
+    git             = { repoURL = "https://github.com/rubiod1/mati-backstage-goldenpath", revision = "main", owner = "rubiod1", repo = "mati-backstage-goldenpath" }
     clusterName     = module.eks.cluster_name
     portalUrl       = try(module.portal_edge[0].api_gateway_url, "http://localhost:7007")
     githubSecretArn = aws_secretsmanager_secret.github.arn

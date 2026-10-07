@@ -3,9 +3,9 @@ aws:
   region: us-east-1
   resourcePrefix: goldenpath-dev
 git:
-  repoURL: https://github.com/Di3g01314/mati-backstage-goldenpath
+  repoURL: https://github.com/rubiod1/mati-backstage-goldenpath
   revision: main
-  owner: Di3g01314
+  owner: rubiod1
   repo: mati-backstage-goldenpath
 clusterName: goldenpath-dev-eks
 portalUrl: https://example.execute-api.us-east-1.amazonaws.com/dev

@@ -5,7 +5,7 @@ ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('policy',ROOT/'scripts/validate-request.py');policy=importlib.util.module_from_spec(spec);spec.loader.exec_module(policy)
 class RequestTests(unittest.TestCase):
  def setUp(self):
-  self.teams=json.loads((ROOT/'config/teams.json').read_text());self.path='gitops/tenants/piloto/gp-piloto-demo';self.registry={'name':'gp-piloto-demo','namespace':'equipo-piloto','team':'piloto','repoURL':'https://github.com/Di3g01314/gp-piloto-demo'}
+  self.teams=json.loads((ROOT/'config/teams.json').read_text());self.path='gitops/tenants/piloto/gp-piloto-demo';self.registry={'name':'gp-piloto-demo','namespace':'equipo-piloto','team':'piloto','repoURL':'https://github.com/rubiod1/gp-piloto-demo'}
   self.db={'apiVersion':'platform.goldenpath.io/v1alpha1','kind':'PostgreSQLInstance','metadata':{'name':'gp-piloto-demo','namespace':'equipo-piloto','labels':{'platform.goldenpath.io/owner':'piloto','platform.goldenpath.io/cost-center':'mati-platform','backstage.io/kubernetes-id':'gp-piloto-demo'}},'spec':{'size':'pequena'}}
  def files(self):return {self.path+'/database.yaml':yaml.safe_dump(self.db),self.path+'/service.json':json.dumps(self.registry)}
  def test_valid(self):self.assertEqual(policy.validate(self.files(),self.teams),'gp-piloto-demo')
@@ -25,6 +25,6 @@ class RequestTests(unittest.TestCase):
   files=self.files();files['.github/workflows/evil.yml']='test'
   with self.assertRaises(ValueError):policy.validate(files,self.teams)
  def test_other_repo(self):
-  self.registry['repoURL']='https://github.com/Di3g01314/mati-backstage-goldenpath'
+  self.registry['repoURL']='https://github.com/rubiod1/mati-backstage-goldenpath'
   with self.assertRaises(ValueError):policy.validate(self.files(),self.teams)
 if __name__=='__main__':unittest.main()

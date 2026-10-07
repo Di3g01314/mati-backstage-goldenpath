@@ -64,4 +64,4 @@ goldenpath:
       namespace: equipo-piloto
       costCenter: mati-platform
       owner: group:default/piloto
-      members: [user:default/di3g01314]
+      members: [user:default/rubiod1]
