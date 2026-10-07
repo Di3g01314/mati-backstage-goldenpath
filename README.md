@@ -6,7 +6,7 @@ Plataforma de autoservicio para MATI: un desarrollador completa **nombre, equipo
 
 ## Qué incluye
 
-- **Terraform:** seis módulos adaptados de reference; VPC independiente, EKS, RDS del portal, ECR, entrada HTTPS mediante API Gateway REST/WAF/NLB y roles Pod Identity. Backend S3 separado listo para bootstrap.
+- **Terraform:** seis módulos de infraestructura para GoldenPath; VPC independiente, EKS, RDS del portal, ECR, entrada HTTPS mediante API Gateway REST/WAF/NLB y roles Pod Identity. Backend S3 separado listo para bootstrap.
 - **Backstage:** aplicación compilable, autenticación GitHub, catálogo, formulario de cuatro campos y acciones que validan identidad, crean el servicio y esperan la política del PR antes de fusionarlo.
 - **GitOps:** Argo CD, proyectos con permisos separados, ApplicationSets, Crossplane v2, Composition de PostgreSQL con dos tamaños, External Secrets, Kyverno e Istio ambient.
 - **Servicio v0:** Node.js/PostgreSQL, SELECT 1 con TLS verificado, disponibilidad dependiente de la base y recuperación comprobada.
@@ -55,4 +55,4 @@ Para explorar el portal localmente: `cd backstage && node .yarn/releases/yarn-4.
 - [Inventario de reutilización](docs/INVENTARIO-REUTILIZACION.md) y [procedencia exacta](docs/PROVENANCE.json)
 - [Presentación de contexto](https://rubiod1.github.io/payments-network-platform-engineering/)
 
-Repositorio privado independiente de reference. No contiene estados, contraseñas ni claves privadas. Los archivos PEM incluidos son certificados públicos de confianza de Amazon RDS.
+Repositorio privado de GoldenPath. No contiene estados, contraseñas ni claves privadas. Los archivos PEM incluidos son certificados públicos de confianza de Amazon RDS.

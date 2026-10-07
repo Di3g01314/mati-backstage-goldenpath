@@ -33,5 +33,5 @@
     "terraform/variables.tf": "4bbde234aac331d41e469fc2fd1e88da1ed36dbf478723d227721fcd2841cdcb",
     "terraform/versions.tf": "320e3388c3e186511e86f645510842b71432d5b964569d576641be6f6f4dd799"
   },
-  "note": "Hashes identify reviewed source files, not the adapted module content. No source history, state or secrets were imported."
+  "note": "Hashes identify reviewed source files, not the adapted module content. Source repository identity is omitted. Reference examples are anonymized. No source history, state or secrets were imported."
 }

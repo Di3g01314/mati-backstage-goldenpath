@@ -23,4 +23,4 @@ La entrega de aplicaciones usa Argo CD. Los repositorios generados incluyen CI d
 
 La publicación inicial de las dos imágenes (Backstage y v0) está implementada en `scripts/publish-images.sh`, con plataforma linux/amd64 y autorización explícita. ECR tiene tags inmutables: no volver a publicar un tag existente; actualizar versiones/valores para siguientes releases. El bootstrap y apply son scripts operativos manuales, bloqueados por defecto. No se ejecutaron durante esta preparación.
 
-Las referencias del CI original de reference se mantienen en `reference/legacy`, fuera de `.github/workflows`. No se copiaron permisos ni automatizaciones de despliegue de ese entorno.
+Las referencias técnicas del CI anterior se mantienen en `reference/legacy`, fuera de `.github/workflows`. No se copiaron permisos ni automatizaciones de despliegue de ese entorno.

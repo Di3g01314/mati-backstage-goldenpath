@@ -26,7 +26,7 @@ El repositorio del servicio contiene código, CI, manifiestos y `catalog-info.ya
 
 Terraform administra VPC, tres AZs, subredes, un NAT de demo, EKS 1.35, dos workers t3.large, roles, RDS de Backstage, ECR y entrada del portal. Crossplane administra las RDS de los servicios. Argo CD reconcilia controladores, plataforma y servicios. Cada equipo tiene un namespace; esta TVP implementa un único equipo `piloto` en `equipo-piloto`.
 
-No se utilizan recursos ni estados de reference. Los módulos conservan su procedencia documentada; sus interfaces y referencias se adaptaron a GoldenPath.
+GoldenPath utiliza recursos y estados propios. Los módulos conservan su procedencia técnica documentada; sus interfaces se adaptaron a la plataforma.
 
 ## Portal y autenticación
 

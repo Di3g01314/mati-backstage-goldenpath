@@ -16,9 +16,9 @@ dashboardProviders:
   dashboardproviders.yaml:
     apiVersion: 1
     providers:
-      - name: reference
+      - name: Referencia
         orgId: 1
-        folder: reference
+        folder: Referencia
         type: file
         disableDeletion: false
         editable: true

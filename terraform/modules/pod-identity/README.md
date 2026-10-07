@@ -1,6 +1,6 @@
 # Identidad de controladores
 
-Origen: `nuevo; sustitución de la estrategia IRSA de controladores` del commit de reference registrado en [procedencia](../../../docs/PROVENANCE.json). Revisar [decisiones y limitaciones](../../../docs/ARQUITECTURA.md) antes de desplegar.
+Origen: `nuevo; sustitución de la estrategia IRSA de controladores` del commit de referencia registrado en [procedencia](../../../docs/PROVENANCE.json). Revisar [decisiones y limitaciones](../../../docs/ARQUITECTURA.md) antes de desplegar.
 
 Entradas documentadas en [variables.tf](variables.tf), recursos en [main.tf](main.tf) y contrato de salida en [outputs.tf](outputs.tf). Este módulo no configura credenciales ni backend: los recibe del root.
 
