@@ -1,6 +1,6 @@
 # Documentación de GoldenPath
 
-Punto de entrada para el equipo y la sustentación. La implementación está preparada; **todavía no se ha desplegado en AWS**. Cada documento distingue configuración existente, resultado probado y evolución propuesta.
+Punto de entrada para el equipo y la sustentación. **El despliegue autorizado en AWS está en curso desde el 7 de octubre de 2026.** El [registro de despliegue](DESPLIEGUE-AWS.md) distingue los recursos ya creados de las integraciones y pruebas que siguen pendientes. Todavía no se ha validado el portal ni la PoC completa en AWS. Cada documento distingue configuración existente, resultado probado y evolución propuesta.
 
 ## Empieza aquí
 

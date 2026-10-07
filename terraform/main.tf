@@ -36,6 +36,7 @@ module "backstage_database" {
   data_subnet_ids           = module.network.data_subnet_ids
   client_security_group_ids = { workers = module.eks.node_security_group_id }
   engine_version            = var.postgres_engine_version
+  instance_class            = var.backstage_database_instance_class
   final_snapshot_suffix     = var.final_snapshot_suffix
 }
 module "ecr" {

@@ -2,7 +2,9 @@
 
 Plataforma de autoservicio para MATI: un desarrollador completa **nombre, equipo, tamaño y descripción** en Backstage y obtiene un repositorio privado, microservicio, PostgreSQL y catálogo, administrados mediante GitOps.
 
-**Implementación preparada y validada antes del despliegue. No se ha desplegado en AWS.** Terraform tiene un bloqueo por defecto y los workflows no tienen credenciales AWS ni ejecutan despliegues. El plan real consultó AWS: **102 recursos nuevos, cero modificaciones y cero eliminaciones**. Eso no garantiza permisos de creación ni el funcionamiento de las integraciones en AWS; consulta [evidencias y límites](docs/VALIDACION.md).
+**Despliegue autorizado en AWS en curso desde el 7 de octubre de 2026.** El backend S3 está aplicado y el estado migrado; VPC, API Gateway, NLB y EKS están creados, los workers se están incorporando y las imágenes `v1` para AMD64 ya están publicadas en ECR. La instalación de Argo CD continúa. RDS requiere ajustar la clase por falta de capacidad y sigue pendiente completar la credencial GitHub. El portal y el recorrido completo de autoservicio todavía no están validados en AWS: consulta el [estado del despliegue y sus pendientes](docs/DESPLIEGUE-AWS.md).
+
+Terraform mantiene un bloqueo por defecto y los workflows no tienen credenciales AWS ni ejecutan despliegues. Las [validaciones previas](docs/VALIDACION.md) documentan el plan inicial y las pruebas locales; sus resultados no equivalen a una PoC completa en AWS.
 
 ## Qué incluye
 

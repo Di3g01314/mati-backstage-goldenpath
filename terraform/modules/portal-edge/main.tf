@@ -101,7 +101,26 @@ resource "aws_api_gateway_integration" "proxy" {
 }
 resource "aws_api_gateway_deployment" "this" {
   rest_api_id = aws_api_gateway_rest_api.this.id
-  triggers    = { redeployment = sha1(jsonencode(aws_api_gateway_integration.proxy)) }
+  # Hash configured fields only; API-populated defaults otherwise cause a second
+  # deployment after the first refresh even when the routes have not changed.
+  triggers = {
+    redeployment = sha1(jsonencode({
+      binary_media_types = aws_api_gateway_rest_api.this.binary_media_types
+      routes = { for key, integration in aws_api_gateway_integration.proxy : key => {
+        resource_id               = integration.resource_id
+        http_method               = integration.http_method
+        integration_http_method   = integration.integration_http_method
+        type                      = integration.type
+        connection_type           = integration.connection_type
+        connection_id             = integration.connection_id
+        uri                       = integration.uri
+        request_parameters        = integration.request_parameters
+        timeout_milliseconds      = integration.timeout_milliseconds
+        authorization             = aws_api_gateway_method.proxy[key].authorization
+        method_request_parameters = aws_api_gateway_method.proxy[key].request_parameters
+      } }
+    }))
+  }
   lifecycle { create_before_destroy = true }
 }
 resource "aws_api_gateway_stage" "this" {

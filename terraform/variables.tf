@@ -63,6 +63,26 @@ variable "postgres_engine_version" {
   type        = string
 }
 
+variable "backstage_database_instance_class" {
+  description = "Backstage DB class; db.t3.micro is a same-size fallback when Graviton capacity is unavailable."
+  type        = string
+  default     = "db.t4g.micro"
+  validation {
+    condition     = contains(["db.t4g.micro", "db.t3.micro"], var.backstage_database_instance_class)
+    error_message = "Backstage must use db.t4g.micro or the db.t3.micro capacity fallback."
+  }
+}
+
+variable "pilot_small_database_instance_class" {
+  description = "Class for the piloto pequena contract, propagated to Crossplane and its IAM permissions."
+  type        = string
+  default     = "db.t4g.micro"
+  validation {
+    condition     = contains(["db.t4g.micro", "db.t3.micro"], var.pilot_small_database_instance_class)
+    error_message = "The pequena size must use db.t4g.micro or the db.t3.micro capacity fallback."
+  }
+}
+
 variable "final_snapshot_suffix" {
   description = "Unique final snapshot suffix for this lifecycle."
   type        = string
