@@ -1,7 +1,9 @@
 app:
   title: GoldenPath · Developer Platform
   baseUrl: http://localhost:3000
-  packages: all
+  packages:
+    exclude:
+      - '@backstage/plugin-app-module-user-settings'
   extensions:
     - page:catalog:
         config: {path: /}
