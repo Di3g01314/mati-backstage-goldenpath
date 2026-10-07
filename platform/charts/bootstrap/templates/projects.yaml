@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: platform
+  namespace: argocd
+spec:
+  sourceRepos:
+    - {{ .Values.git.repoURL | quote }}
+    - https://charts.crossplane.io/stable
+    - https://charts.external-secrets.io
+    - https://kyverno.github.io/kyverno/
+    - https://istio-release.storage.googleapis.com/charts
+  destinations:
+    - {server: 'https://kubernetes.default.svc', namespace: '*'}
+  clusterResourceWhitelist:
+    - {group: '*', kind: '*'}
+  namespaceResourceWhitelist:
+    - {group: '*', kind: '*'}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: pilot-infra
+  namespace: argocd
+spec:
+  sourceRepos: [{{ .Values.git.repoURL | quote }}]
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: {{ .Values.pilot.namespace }}
+  clusterResourceWhitelist: []
+  namespaceResourceWhitelist:
+    - {group: platform.goldenpath.io, kind: PostgreSQLInstance}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: pilot-services
+  namespace: argocd
+spec:
+  sourceRepos: ['https://github.com/{{ .Values.git.owner }}/gp-piloto-*']
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: {{ .Values.pilot.namespace }}
+  clusterResourceWhitelist: []
+  namespaceResourceWhitelist:
+    - {group: apps, kind: Deployment}
+    - {group: '', kind: Service}
+    - {group: '', kind: ServiceAccount}
+    - {group: '', kind: ConfigMap}

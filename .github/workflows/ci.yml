@@ -29,3 +29,65 @@ jobs:
           terraform_wrapper: false
       - name: Format, validate, mocked tests and repository checks
         run: ./scripts/validate.sh
+
+  platform:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Install validation dependencies
+        run: |
+          python3 -m pip install -r scripts/requirements.txt
+          curl -fsSLO https://get.helm.sh/helm-v4.3.0-linux-amd64.tar.gz
+          curl -fsSLO https://get.helm.sh/helm-v4.3.0-linux-amd64.tar.gz.sha256sum
+          sha256sum --check helm-v4.3.0-linux-amd64.tar.gz.sha256sum
+          tar -xzf helm-v4.3.0-linux-amd64.tar.gz
+          sudo mv linux-amd64/helm /usr/local/bin/helm
+          curl -fsSL https://cli.crossplane.io/stable/v2.5.0/bin/linux_amd64/crossplane -o /tmp/crossplane
+          echo '065dd6b40c9ea5fc71e49900d5c924cc0bec7f58375922ddbde6b402f292347e  /tmp/crossplane' | sha256sum --check
+          chmod +x /tmp/crossplane
+      - name: Policy contracts and Crossplane rendering
+        env:
+          CROSSPLANE_BIN: /tmp/crossplane
+        run: |
+          python3 -m unittest discover -s tests -v
+          python3 scripts/validate-platform.py
+
+  service:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 24.21.0
+      - name: Service unit tests
+        working-directory: services/service-v0
+        run: npm ci && npm test
+      - name: Real PostgreSQL TLS, outage and recovery
+        run: python3 scripts/test-service-integration.py
+
+  backstage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 24.21.0
+      - name: Install and compile Backstage
+        working-directory: backstage
+        run: |
+          node .yarn/releases/yarn-4.13.0.cjs install --immutable
+          node .yarn/releases/yarn-4.13.0.cjs tsc
+          node .yarn/releases/yarn-4.13.0.cjs build:backend
+      - name: Real scaffolder dry run and permission policy
+        run: |
+          python3 -m pip install -r scripts/requirements.txt
+          ./scripts/test-backstage.sh

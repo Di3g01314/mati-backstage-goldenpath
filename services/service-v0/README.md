@@ -1,11 +1,7 @@
-# Contrato del servicio v0 (pendiente de implementación)
+# Servicio v0
 
-Imagen genérica para la primera entrega del Golden Path. Debe leer PGHOST, PGPORT, PGDATABASE, PGUSER y PGPASSWORD desde un Secret único por servicio y requerir TLS para PostgreSQL.
+Servicio HTTP Node.js con PostgreSQL. `GET /healthz` indica liveness. `GET /readyz` y `GET /` ejecutan SELECT 1 y devuelven 200 si PostgreSQL responde, o 503 sin revelar errores/credenciales. La conexión verifica TLS contra el bundle público de Amazon RDS.
 
-- `GET /healthz`: proceso vivo, sin dependencia de DB.
-- `GET /readyz`: comprueba conexión y SELECT 1; 200 si conecta, 503 si no.
-- `GET /`: respuesta legible con nombre del servicio, versión y estado conectado; jamás imprimir contraseña o cadena de conexión completa.
+Configuración: variables estándar PGHOST, PGPORT, PGUSER, PGPASSWORD, PGDATABASE; SERVICE_NAME y SERVICE_VERSION. Los manifiestos generados toman las cuatro primeras del Secret de Crossplane y usan PGDATABASE=app. PGSSLMODE=disable solo se permite fuera de producción.
 
-Incluir timeout, reintentos acotados al arrancar, ejecución sin root, requests/limits y probes. Si RDS todavía no está disponible, readiness debe fallar sin reinicios continuos por liveness. Probar con PostgreSQL local antes de publicar la imagen en ECR.
-
-El build/publicación inicial está pendiente. Este README no constituye una aplicación funcional.
+`npm ci && npm test` ejecuta pruebas unitarias. `python3 ../../scripts/test-service-integration.py` comprueba una base real, TLS, caída y recuperación en contenedores locales. La plantilla Backstage incluye el mismo código y un CI de Node. La imagen genérica v1 se publica una vez con el script operativo de plataforma.

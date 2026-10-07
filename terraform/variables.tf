@@ -69,7 +69,7 @@ variable "final_snapshot_suffix" {
 }
 
 variable "enable_portal_edge" {
-  description = "Optional portal transport; authentication and TLS design remain pending."
+  description = "Enable the managed HTTPS REST API Gateway and WAF entry point for Backstage."
   type        = bool
   default     = false
 }

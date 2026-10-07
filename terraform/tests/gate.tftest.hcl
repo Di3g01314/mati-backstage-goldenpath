@@ -1,4 +1,7 @@
-mock_provider "aws" {}
+mock_provider "aws" {
+  mock_data "aws_partition" { defaults = { partition = "aws" } }
+  mock_data "aws_iam_policy_document" { defaults = { json = "{\"Version\":\"2012-10-17\",\"Statement\":[]}" } }
+}
 override_module {
   target  = module.network
   outputs = { vpc_id = "vpc-test", private_subnet_ids = ["subnet-a", "subnet-b"], data_subnet_ids = ["subnet-c", "subnet-d"] }
@@ -13,7 +16,7 @@ override_module {
 }
 override_module {
   target  = module.ecr
-  outputs = { repository_urls = {} }
+  outputs = { repository_urls = { "goldenpath-dev/backstage" = "registry.example/backstage", "goldenpath-dev/service-v0" = "registry.example/service-v0" } }
 }
 run "deployment_blocked_by_default" {
   command = plan

@@ -1,0 +1,44 @@
+configs:
+  params:
+    server.insecure: true
+  cm:
+    application.resourceTrackingMethod: annotation
+    resource.customizations.health.argoproj.io_Application: |
+      local hs = {status = "Progressing", message = "Waiting for child application"}
+      if obj.status ~= nil and obj.status.health ~= nil and obj.status.sync ~= nil then
+        hs.status = obj.status.health.status
+        if obj.status.sync.status ~= "Synced" then hs.status = "Progressing" end
+        hs.message = obj.status.health.message or ""
+      end
+      return hs
+    resource.customizations.health.pkg.crossplane.io_Provider: |
+      local hs = {status = "Progressing", message = "Waiting for provider"}
+      for _, c in ipairs((obj.status or {}).conditions or {}) do
+        if c.type == "Healthy" and c.status == "True" then hs.status = "Healthy" end
+      end
+      return hs
+    resource.customizations.health.pkg.crossplane.io_Function: |
+      local hs = {status = "Progressing", message = "Waiting for function"}
+      for _, c in ipairs((obj.status or {}).conditions or {}) do
+        if c.type == "Healthy" and c.status == "True" then hs.status = "Healthy" end
+      end
+      return hs
+    resource.customizations.health.apiextensions.crossplane.io_CompositeResourceDefinition: |
+      local hs = {status = "Progressing", message = "Waiting for XR schema"}
+      for _, c in ipairs((obj.status or {}).conditions or {}) do
+        if c.type == "Established" and c.status == "True" then hs.status = "Healthy" end
+      end
+      return hs
+    resource.customizations.health.platform.goldenpath.io_PostgreSQLInstance: |
+      local hs = {status = "Progressing", message = "Provisioning PostgreSQL"}
+      for _, c in ipairs((obj.status or {}).conditions or {}) do
+        if c.type == "Ready" and c.status == "True" then hs.status = "Healthy"; hs.message = "PostgreSQL Ready" end
+      end
+      return hs
+  rbac:
+    policy.default: role:readonly
+server:
+  service: {type: ClusterIP}
+redis:
+  resources:
+    requests: {cpu: 50m, memory: 64Mi}

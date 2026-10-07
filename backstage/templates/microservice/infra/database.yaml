@@ -1,0 +1,11 @@
+apiVersion: platform.goldenpath.io/v1alpha1
+kind: PostgreSQLInstance
+metadata:
+  name: ${{ values.name }}
+  namespace: ${{ values.namespace }}
+  labels:
+    platform.goldenpath.io/owner: piloto
+    platform.goldenpath.io/cost-center: ${{ values.costCenter }}
+    backstage.io/kubernetes-id: ${{ values.name }}
+spec:
+  size: ${{ values.size }}

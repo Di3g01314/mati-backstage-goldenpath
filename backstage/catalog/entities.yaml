@@ -1,0 +1,26 @@
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: piloto
+  description: Equipo piloto de GoldenPath
+spec:
+  type: team
+  profile: {displayName: Equipo piloto}
+  children: []
+  members: [di3g01314]
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: di3g01314
+spec:
+  profile: {displayName: Diego Latorre}
+  memberOf: [piloto]
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: goldenpath
+  description: Plataforma de autoservicio para microservicios con PostgreSQL
+spec:
+  owner: group:default/piloto

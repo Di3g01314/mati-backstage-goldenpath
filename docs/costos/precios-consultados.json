@@ -1,0 +1,42 @@
+{
+  "consulted_date": "2026-10-06",
+  "timezone": "America/Bogota",
+  "region": "us-east-1",
+  "source": "AWS Price List Query API / GetProducts",
+  "filters": {
+    "ec2": {
+      "instanceType": "t3.large",
+      "location": "US East (N. Virginia)",
+      "operatingSystem": "Linux",
+      "tenancy": "Shared",
+      "preInstalledSw": "NA",
+      "capacitystatus": "Used"
+    },
+    "rds": {
+      "instanceType": "db.t4g.micro",
+      "location": "US East (N. Virginia)",
+      "databaseEngine": "PostgreSQL",
+      "deploymentOption": "Single-AZ"
+    }
+  },
+  "prices": [
+    {
+      "service": "ec2",
+      "sku": "HBVJM3Q9S8K6MNPJ",
+      "usage_type": "BoxUsage:t3.large",
+      "effective_date": "2026-10-01T00:00:00Z",
+      "unit": "Hrs",
+      "usd": "0.0832000000",
+      "description": "$0.0832 per On Demand Linux t3.large Instance Hour"
+    },
+    {
+      "service": "rds",
+      "sku": "9HPEGXQTDDGH53C9",
+      "usage_type": "InstanceUsage:db.t4g.micro",
+      "effective_date": "2026-10-01T00:00:00Z",
+      "unit": "Hrs",
+      "usd": "0.0160000000",
+      "description": "$ 0.016 per RDS db.t4g.micro Single-AZ instance hour (or partial hour) running PostgreSQL"
+    }
+  ]
+}

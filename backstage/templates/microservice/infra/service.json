@@ -1,0 +1,6 @@
+{
+  "name": "${{ values.name }}",
+  "namespace": "${{ values.namespace }}",
+  "team": "piloto",
+  "repoURL": "https://github.com/${{ values.githubOwner }}/${{ values.name }}"
+}

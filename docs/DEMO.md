@@ -1,18 +1,24 @@
-# Video de la TVP
+# Guion del video · GoldenPath
 
-Guion previsto; ninguna evidencia se presenta como ya ejecutada.
+## Historia
 
-| Escena | Acción | Evidencia a obtener |
-|---|---|---|
-| 1. Problema y solución | Mostrar el formulario y sus cuatro campos | Servicio, equipo, tamaño y descripción; ambiente dev fijo |
-| 2. Autoservicio | Enviar solicitud con cronómetro | Repo del servicio y PR GitOps generados |
-| 3. Entrega declarativa | Mostrar checks y las dos Applications | Infraestructura y servicio con fuentes/permisos separados |
-| 4. AWS real | Ver recurso compuesto y estado RDS | Base privada y recurso Ready; sin mostrar contraseñas |
-| 5. Resultado | Abrir servicio y catálogo | SELECT 1 exitoso, owner y repo correctos |
-| 6. Autonomía | Cambiar imagen por commit | Argo sincroniza la nueva versión |
-| 7. Reconciliación | Alterar un atributo reversible de la RDS de prueba | Crossplane restaura el valor declarado |
-| 8. Guardrails | Solicitar tamaño inválido o quitar centro de costo | Rechazo claro antes de crear recurso |
+“Necesito un microservicio con PostgreSQL. Antes pedía repositorio, namespace, base y credenciales. Ahora completo cuatro campos y la plataforma conserva el gobierno en Git.”
 
-Registrar duración real, versiones, commit y condiciones de la prueba. Si se edita el video para recortar la espera, mostrar el tiempo transcurrido real. El cronómetro empieza con los cimientos ya disponibles: aprovisionar EKS no forma parte del tiempo de cada solicitud.
+## Secuencia de grabación
 
-Para la grabación final: datos ficticios, cuenta de laboratorio, ventanas legibles y recorrido ensayado. Capturar errores útiles y recuperación cuando formen parte del criterio. No ejecutar cambios de drift en recursos ajenos a la PoC.
+1. Mostrar GoldenPath, login GitHub y equipo piloto. Explicar el resultado esperado en una frase.
+2. Abrir Crear → microservicio PostgreSQL. Completar nombre único, equipo piloto, tamaño pequeña y descripción. Iniciar cronómetro visible.
+3. Mostrar tareas de Backstage: contrato validado, repositorio, PR de infraestructura, política y fusión. Abrir el PR y los dos archivos permitidos.
+4. Mostrar Argo CD: Application de infraestructura y del servicio. Explicar que los cambios declarados se reconcilian desde Git.
+5. Mostrar RDS Ready y Deployment disponible en la vista Kubernetes. Mostrar únicamente nombres de Secrets, nunca sus valores.
+6. Usar port-forward del Service y abrir su respuesta: `database: connected`. Esto ejecuta SELECT 1 con TLS verificado.
+7. Mostrar catálogo con dueño, repositorio y sistema. Cerrar el cronómetro y declarar el tiempo real.
+8. Demostrar un rechazo de contrato en PR/dry-run (tamaño o centro de costo inválido). Explicar retención de bases y cierre de costos.
+
+## Preparación de toma
+
+Ensayar OAuth usando la URL real de API Gateway con `/dev`. Preparar una vista limpia de Backstage, GitHub y Argo CD. La UI de Argo CD solo se abre por port-forward autorizado; no hacerla pública. Usar un nombre nuevo por toma para evitar colisiones. Las esperas de RDS se pueden acelerar en edición, rotulando claramente tiempo transcurrido; no simular éxito ni atribuir el resultado local a AWS.
+
+La prueba local permite grabar un adelanto del formulario y explicar la arquitectura, pero el video de extremo a extremo requiere desplegar y verificar la plataforma. No se ha realizado ese despliegue.
+
+Relacionar cada toma con la [matriz de evidencias de aceptación](EVIDENCIAS-ACEPTACION.md); registrar tiempos reales y estado del entorno.

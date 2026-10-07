@@ -1,9 +1,7 @@
-# Plataforma GitOps pendiente
+# Plataforma GitOps
 
-Esta carpeta reserva el contrato de integración; todavía no contiene manifiestos aplicables.
+`charts/bootstrap` instala AppProjects y Applications. `charts/config` se renderiza en etapas `runtime`, `resources`, `backstage`, `applicationsets`; `all` se usa en validación local. Los valores reales se exportan desde outputs de Terraform a `.generated/platform-values.yaml` y nunca se versionan.
 
-Estructura futura: bootstrap app-of-apps; Argo CD; Backstage; Crossplane v2 (provider RDS, function, XRD y Composition); Kyverno; External Secrets; Istio ambient; namespaces de equipos y ApplicationSets.
+Versiones en `versions.yaml`, esquemas externos con SHA256 en `schemas.lock.json`. La infraestructura del piloto se origina en `gitops/tenants/piloto/<servicio>/`; cada servicio tiene su propio repositorio privado. Las bases quedan retenidas por diseño al retirar la solicitud.
 
-Cada servicio requiere dos Applications y fuentes Git distintas. Los repositorios de los equipos no pueden declarar Namespace, PostgreSQLInstance ni recursos de plataforma. AppProjects y RBAC deben impedirlo efectivamente: no basta que la plantilla genere un namespace correcto.
-
-GitOps del piloto: namespace del equipo, PostgreSQLInstance con nombre único por servicio, metadatos owner/cost-center y descriptor que asocia servicio, equipo y repoURL. No confundir nombre de servicio con namespace de equipo; varios servicios del mismo equipo deben compartir el namespace sin sobrescribir Secrets.
+Consultar [arquitectura](../docs/ARQUITECTURA.md), [operación](../docs/PREPARACION-DESPLIEGUE.md) y [validación](../docs/VALIDACION.md). Los valores de `tests/fixtures/platform.yaml` son ficticios y solo sirven para render.

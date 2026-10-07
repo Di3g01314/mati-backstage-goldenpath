@@ -1,0 +1,31 @@
+{{- if or (eq .Values.stage "all") (eq .Values.stage "runtime") }}
+apiVersion: pkg.crossplane.io/v1beta1
+kind: DeploymentRuntimeConfig
+metadata: {name: aws-rds-pod-identity}
+spec:
+  serviceAccountTemplate:
+    metadata: {name: provider-aws-rds}
+  deploymentTemplate:
+    spec:
+      selector: {}
+      template:
+        spec:
+          containers:
+            - name: package-runtime
+              resources:
+                requests: {cpu: 100m, memory: 256Mi}
+                limits: {cpu: '1', memory: 768Mi}
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata: {name: provider-aws-rds}
+spec:
+  package: xpkg.upbound.io/upbound/provider-aws-rds:v2.8.1
+  runtimeConfigRef: {name: aws-rds-pod-identity}
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Function
+metadata: {name: function-patch-and-transform}
+spec:
+  package: xpkg.crossplane.io/crossplane-contrib/function-patch-and-transform:v0.11.0
+{{- end }}

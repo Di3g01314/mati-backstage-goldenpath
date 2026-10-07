@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${{ values.name }}
+  namespace: ${{ values.namespace }}
+  labels: {backstage.io/kubernetes-id: '${{ values.name }}'}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: '${{ values.name }}'}
+  template:
+    metadata:
+      labels: {app: '${{ values.name }}', goldenpath.io/workload: pilot, backstage.io/kubernetes-id: '${{ values.name }}'}
+    spec:
+      serviceAccountName: ${{ values.name }}
+      automountServiceAccountToken: false
+      securityContext: {runAsNonRoot: true, runAsUser: 1000, runAsGroup: 1000, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: service
+          image: ${{ values.image }}
+          ports: [{containerPort: 8080, name: http}]
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {cpu: 250m, memory: 192Mi}
+          env:
+            - {name: SERVICE_NAME, value: '${{ values.name }}'}
+            - {name: PGDATABASE, value: app}
+            - name: PGHOST
+              valueFrom: {secretKeyRef: {name: '${{ values.name }}-connection', key: host}}
+            - name: PGPORT
+              valueFrom: {secretKeyRef: {name: '${{ values.name }}-connection', key: port}}
+            - name: PGUSER
+              valueFrom: {secretKeyRef: {name: '${{ values.name }}-connection', key: username}}
+            - name: PGPASSWORD
+              valueFrom: {secretKeyRef: {name: '${{ values.name }}-connection', key: password}}
+          readinessProbe: {httpGet: {path: /readyz, port: http}, periodSeconds: 5, timeoutSeconds: 3}
+          livenessProbe: {httpGet: {path: /healthz, port: http}, periodSeconds: 15, timeoutSeconds: 2}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ${{ values.name }}
+  namespace: ${{ values.namespace }}
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${{ values.name }}
+  namespace: ${{ values.namespace }}
+  labels: {backstage.io/kubernetes-id: '${{ values.name }}'}
+spec:
+  selector: {app: '${{ values.name }}'}
+  ports: [{port: 80, targetPort: http, name: http}]

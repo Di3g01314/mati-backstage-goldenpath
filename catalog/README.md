@@ -1,7 +1,5 @@
-# Contrato del catálogo (pendiente)
+# Catálogo
 
-Registrar grupos/equipos y el Component por servicio, con owner válido, repo, descripción, ambiente dev y referencias a Argo CD/Kubernetes. El centro de costo debe venir del equipo o configuración administrada, no convertirse en un quinto campo del formulario.
+Las entidades activas están en `backstage/catalog/entities.yaml`. Incluyen el sistema GoldenPath, el equipo piloto y el usuario autorizado de GitHub. La plantilla está en `backstage/templates/microservice/template.yaml`.
 
-Los cuatro campos son: nombre del servicio, equipo dueño, tamaño de base (pequeña/mediana), descripción. El formulario genera código, manifiestos de servicio y PR GitOps. La plataforma deriva el namespace desde el equipo y usa nombres únicos por servicio para base y Secret.
-
-Falta implementar el portal, template, catálogo y lectura del estado real; no se fabrican estados Ready para la demo.
+Cada solicitud produce un Component con dueño, sistema, repositorio y anotaciones Kubernetes que acotan la consulta al namespace del piloto. Las altas remotas se realizan mediante la acción controlada `goldenpath:register`; los usuarios no pueden importar plantillas arbitrarias.

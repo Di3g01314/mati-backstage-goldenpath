@@ -34,11 +34,11 @@ resource "aws_iam_role" "eks_node" {
 }
 
 resource "aws_iam_role_policy_attachment" "eks_node" {
-  for_each = toset([
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKS_CNI_Policy",
-    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  ])
+  for_each = {
+    worker = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+    cni    = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKS_CNI_Policy"
+    ecr    = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  }
 
   role       = aws_iam_role.eks_node.name
   policy_arn = each.value
@@ -140,6 +140,7 @@ resource "aws_eks_cluster" "this" {
 
   depends_on = [
     aws_iam_role_policy_attachment.eks_cluster,
+    aws_iam_role_policy_attachment.vpc_controller,
     aws_cloudwatch_log_group.eks
   ]
 }
@@ -222,6 +223,7 @@ resource "aws_eks_addon" "this" {
   cluster_name                = aws_eks_cluster.this.name
   addon_name                  = each.key
   addon_version               = each.value
+  configuration_values        = each.key == "vpc-cni" ? jsonencode({ enableNetworkPolicy = "true", env = { ENABLE_POD_ENI = "true", POD_SECURITY_GROUP_ENFORCING_MODE = "standard" } }) : null
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "PRESERVE"
 
@@ -239,4 +241,9 @@ resource "aws_kms_key" "cluster" {
 resource "aws_kms_alias" "cluster" {
   name          = "alias/${var.cluster_name}"
   target_key_id = aws_kms_key.cluster.key_id
+}
+
+resource "aws_iam_role_policy_attachment" "vpc_controller" {
+  role       = aws_iam_role.eks_cluster.name
+  policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKSVPCResourceController"
 }

@@ -1,0 +1,106 @@
+openapi: 3.0.3
+info:
+  title: GoldenPath service v0
+  version: 1.0.0
+  description: Contrato documental del servicio interno. No se publica automáticamente
+    en Backstage ni en un endpoint OpenAPI.
+servers:
+- url: http://localhost:8080
+  description: Túnel local al Service; no es un endpoint público AWS.
+security: []
+paths:
+  /:
+    get:
+      operationId: checkDatabase
+      responses:
+        '200':
+          description: SELECT 1 completado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connected'
+        '503':
+          description: Base no disponible; no expone errores privados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unavailable'
+  /readyz:
+    get:
+      operationId: readiness
+      responses:
+        '200':
+          description: SELECT 1 completado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connected'
+        '503':
+          description: Base no disponible; no expone errores privados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unavailable'
+  /healthz:
+    get:
+      operationId: liveness
+      responses:
+        '200':
+          description: Proceso vivo sin consulta de BD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alive'
+components:
+  schemas:
+    Alive:
+      type: object
+      required:
+      - status
+      - service
+      - version
+      properties:
+        status:
+          type: string
+          enum:
+          - alive
+        service:
+          type: string
+        version:
+          type: string
+    Connected:
+      type: object
+      required:
+      - service
+      - version
+      - database
+      - message
+      properties:
+        service:
+          type: string
+        version:
+          type: string
+        database:
+          type: string
+          enum:
+          - connected
+        message:
+          type: string
+    Unavailable:
+      type: object
+      required:
+      - service
+      - version
+      - database
+      - message
+      properties:
+        service:
+          type: string
+        version:
+          type: string
+        database:
+          type: string
+          enum:
+          - unavailable
+        message:
+          type: string

@@ -1,7 +1,5 @@
-# Entrada opcional del portal
+# Entrada del portal
 
-Origen: `terraform/api.tf` del commit de reference registrado en [procedencia](../../../docs/PROVENANCE.json). Revisar [decisiones y limitaciones](../../../docs/ARQUITECTURA.md) antes de desplegar.
+API Gateway REST regional con HTTPS administrado por AWS, stage dev, WAF de límite por IP y throttling. VPC Link conecta un NLB interno al NodePort 30080 del gateway Istio. Las rutas raíz y proxy admiten login OAuth y assets; Backstage controla autenticación de sus APIs.
 
-Entradas documentadas en [variables.tf](variables.tf), recursos en [main.tf](main.tf) y contrato de salida en [outputs.tf](outputs.tf). Este módulo no configura credenciales ni backend: los recibe del root.
-
-La validación de este repositorio es estática y con mocks; aún no se ha probado el despliegue de esta adaptación en AWS.
+Sin dominio propio. TLS termina en API Gateway; transporte privado HTTP. Ver `docs/ARQUITECTURA.md` para límites y verificación pendiente de callbacks/rutas en AWS.

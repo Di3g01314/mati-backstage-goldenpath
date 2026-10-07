@@ -9,8 +9,10 @@ command -v "$TF_BIN" >/dev/null || { echo "Terraform is required." >&2; exit 1; 
 "$TF_BIN" -chdir="$ROOT_DIR/terraform" validate -no-color
 # Every test uses mock_provider aws; run blocks use command = plan.
 "$TF_BIN" -chdir="$ROOT_DIR/terraform" test -no-color
-# Pod Identity is a reusable module, not wired into the root until its policy is reviewed.
+# Validate the independently bootstrapped backend and reusable module.
 "$TF_BIN" -chdir="$ROOT_DIR/terraform/modules/pod-identity" init -backend=false -input=false -lockfile=readonly
 "$TF_BIN" -chdir="$ROOT_DIR/terraform/modules/pod-identity" validate -no-color
+"$TF_BIN" -chdir="$ROOT_DIR/terraform/bootstrap-state" init -backend=false -input=false -lockfile=readonly
+"$TF_BIN" -chdir="$ROOT_DIR/terraform/bootstrap-state" validate -no-color
 for file in "$ROOT_DIR"/scripts/*.sh; do bash -n "$file"; done
 python3 "$ROOT_DIR/scripts/check-repository.py"

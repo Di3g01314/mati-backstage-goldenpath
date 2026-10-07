@@ -18,3 +18,15 @@ crash.*.log
 *.dump
 secrets/
 __pycache__/
+node_modules/
+dist/
+dist-types/
+coverage/
+**/.yarn/*
+!**/.yarn/releases/
+!**/certs/global-bundle.pem
+.generated/
+*.tsbuildinfo
+*.log
+__pycache__/
+.venv/

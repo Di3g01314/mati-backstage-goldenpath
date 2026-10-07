@@ -1,31 +1,26 @@
-# CI/CD
+# CI y entrega GitOps
 
-## Lo que existe en el origen
+## CI de implementación
 
-reference tiene un workflow `CI - validacion sin AWS` (PR y ejecución manual). El último commit revisado pasó. Hace formato/validación Terraform, sintaxis shell, JSON de dashboards y checksums. Sus despliegues son scripts manuales, no un workflow CD. La instrucción original `bash -n scripts/*.sh experiments/*.sh` no garantiza revisar cada archivo: aquí se usa un bucle por archivo.
+`ci.yml` tiene cuatro trabajos sin acceso AWS:
 
-Se conserva el YAML original en `reference/legacy/ci.yml.reference`; GitHub Actions no lo ejecuta desde allí.
+1. Terraform fmt/init/validate, siete planes con proveedor simulado, bootstrap-state y control de referencias/credenciales evidentes.
+2. Siete pruebas de la política de solicitudes, Helm lint/render y ejecución real de function-patch-and-transform para los dos tamaños. Los objetos se validan con los esquemas fijados del proveedor AWS.
+3. Pruebas unitarias del servicio y PostgreSQL real en Docker: TLS verificado, SELECT 1, fallo y recuperación.
+4. Instalación inmutable, TypeScript, build de Backstage, backend local y dry-run real del formulario; se comprueba rechazo de altas arbitrarias de catálogo.
 
-## Lo que queda activo aquí
+Acciones de checkout/setup fijadas por SHA. Terraform, dependencias de aplicaciones y charts tienen versiones/locks. Los workflows no incluyen AWS credentials, OIDC, apply, destroy ni despliegue a Kubernetes.
 
-Un workflow CI en push a main, PR y ejecución manual:
+## Política de solicitudes
 
-1. Checkout con persistencia de credenciales deshabilitada.
-2. Terraform 1.16.2 y proveedor AWS fijado por lockfile.
-3. `fmt -check`, `init -backend=false -lockfile=readonly`, `validate`.
-4. Pruebas con proveedor AWS simulado: aislamiento de subredes, RDS privada y protegida, ECR inmutable, gateway autenticado, EKS privado y bloqueo de despliegue.
-5. Validación independiente de Pod Identity, sintaxis de cada script y revisión básica de credenciales/referencias heredadas.
+`goldenpath-policy.yml` usa pull_request_target exclusivamente para ramas `goldenpath/`. Ejecuta el código del **SHA base confiable** y lee los dos archivos propuestos como datos mediante GitHub API. Nunca hace checkout ni ejecuta código del PR. Publica el check `goldenpath-policy` en su SHA exacto; Backstage valida origen, rama, base y resultado antes de fusionar con condición de SHA.
 
-Permisos del workflow: únicamente `contents: read`. No hay AWS secrets, token OIDC, backend remoto, apply, destroy ni bootstrap. Las pruebas ejercitan el código con datos simulados; no validan las autorizaciones reales ni disponibilidad regional.
+El workflow debe estar en `main` antes de usar el formulario por primera vez. Los administradores del repositorio siguen siendo una frontera de confianza: pueden modificar políticas, workflows y la configuración de plataforma. Se recomienda proteger main y limitar administración antes de ampliar la demo a más equipos.
 
-Las acciones están fijadas al commit correspondiente a los tags verificados del origen. La revisión de credenciales es una comprobación básica por patrones, no una auditoría exhaustiva de secretos.
+## Entrega
 
-## CD pendiente (no configurado)
+La entrega de aplicaciones usa Argo CD. Los repositorios generados incluyen CI de Node.js y manifiestos que utilizan la imagen genérica `service-v0:v1`. Este es el contrato del servicio v0: cambiar su código todavía no construye/publica automáticamente una imagen propia. Para v1 de la plataforma se puede agregar construcción por servicio con OIDC y actualización de digest en GitOps.
 
-- Cimientos: workflow separado de ejecución manual, rol AWS vía GitHub OIDC acotado a repo/ref/environment y backend exclusivo; revisión del plan y autorización antes del primer apply.
-- Bootstrap: instalación inicial de Argo CD desde un ejecutor con acceso al endpoint privado de EKS; después, app-of-apps.
-- Plataforma/equipos: Argo CD sincroniza GitOps. El usuario no entrega credenciales AWS a las plantillas.
-- Servicio v0: build, prueba de conexión y publicación en ECR. La imagen genérica inicial sí hace parte del arranque; automatizar builds de todos los servicios queda para la siguiente fase.
-- PR del Golden Path: checks de políticas y merge automático limitado al contrato estándar, sin convertir los permisos del scaffolder en administración general de GitHub.
+La publicación inicial de las dos imágenes (Backstage y v0) está implementada en `scripts/publish-images.sh`, con plataforma linux/amd64 y autorización explícita. ECR tiene tags inmutables: no volver a publicar un tag existente; actualizar versiones/valores para siguientes releases. El bootstrap y apply son scripts operativos manuales, bloqueados por defecto. No se ejecutaron durante esta preparación.
 
-No se ha creado un workflow CD vacío o con capacidad latente de desplegar. Se agregará al implementar y autorizar esa fase.
+Las referencias técnicas del CI anterior se mantienen en `reference/legacy`, fuera de `.github/workflows`. No se copiaron permisos ni automatizaciones de despliegue de ese entorno.

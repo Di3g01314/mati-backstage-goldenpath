@@ -1,0 +1,42 @@
+{{- if or (eq .Values.stage "all") (eq .Values.stage "applicationsets") }}
+{{- range $component := list "infra" "service" }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata: {name: pilot-{{ $component }}, namespace: argocd}
+spec:
+  goTemplate: true
+  goTemplateOptions: [missingkey=error]
+  syncPolicy: {preserveResourcesOnDeletion: true}
+  generators:
+    - git:
+        repoURL: {{ $.Values.git.repoURL | quote }}
+        revision: {{ $.Values.git.revision | quote }}
+        files:
+          - path: gitops/tenants/piloto/*/service.json
+  template:
+    metadata:
+      name: '{{ "{{ .name }}" }}-{{ $component }}'
+    spec:
+      project: {{ if eq $component "infra" }}pilot-infra{{ else }}pilot-services{{ end }}
+      source:
+        {{- if eq $component "infra" }}
+        repoURL: {{ $.Values.git.repoURL | quote }}
+        targetRevision: {{ $.Values.git.revision | quote }}
+        path: '{{ "{{ .path.path }}" }}'
+        directory: {exclude: service.json}
+        {{- else }}
+        repoURL: '{{ "{{ .repoURL }}" }}'
+        targetRevision: main
+        path: deploy
+        {{- end }}
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: {{ $.Values.pilot.namespace }}
+      syncPolicy:
+        automated: {prune: {{ if eq $component "infra" }}false{{ else }}true{{ end }}, selfHeal: true}
+        retry:
+          limit: 10
+          backoff: {duration: 10s, factor: 2, maxDuration: 3m}
+{{- end }}
+{{- end }}

@@ -1,0 +1,12 @@
+[
+  {
+    "name": "rds-crd.yaml",
+    "url": "https://raw.githubusercontent.com/crossplane-contrib/provider-upjet-aws/v2.8.1/package/crds/rds.aws.m.upbound.io_instances.yaml",
+    "sha256": "cde369ea01493ce06e29938c4bb1806f34579b185a54a9aa7d0db9b18e3ff9ac"
+  },
+  {
+    "name": "providerconfig-crd.yaml",
+    "url": "https://raw.githubusercontent.com/crossplane-contrib/provider-upjet-aws/v2.8.1/package/crds/aws.m.upbound.io_clusterproviderconfigs.yaml",
+    "sha256": "b504cfc288af79ca15f22a4fb919e57186f361a05c7892244f9f9a167af4f90f"
+  }
+]

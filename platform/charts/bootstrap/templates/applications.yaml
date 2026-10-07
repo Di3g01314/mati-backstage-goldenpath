@@ -1,0 +1,387 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: crossplane
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '-50'
+spec:
+  project: platform
+  source:
+    repoURL: https://charts.crossplane.io/stable
+    chart: crossplane
+    targetRevision: 2.4.2
+    helm:
+      releaseName: crossplane
+      valuesObject:
+        provider:
+          defaultActivations:
+          - instances.rds.aws.m.upbound.io
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: crossplane-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+    retry:
+      limit: 10
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-secrets
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '-50'
+spec:
+  project: platform
+  source:
+    repoURL: https://charts.external-secrets.io
+    chart: external-secrets
+    targetRevision: 2.12.0
+    helm:
+      releaseName: external-secrets
+      valuesObject:
+        serviceAccount:
+          create: true
+          name: external-secrets
+        installCRDs: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: external-secrets
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+    retry:
+      limit: 10
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kyverno
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '-50'
+spec:
+  project: platform
+  source:
+    repoURL: https://kyverno.github.io/kyverno/
+    chart: kyverno
+    targetRevision: 3.9.1
+    helm:
+      releaseName: kyverno
+      valuesObject:
+        admissionController:
+          replicas: 1
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kyverno
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+    retry:
+      limit: 10
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: istio-base
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '-50'
+spec:
+  project: platform
+  source:
+    repoURL: https://istio-release.storage.googleapis.com/charts
+    chart: base
+    targetRevision: 1.30.5
+    helm:
+      releaseName: istio-base
+      valuesObject: {}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+    retry:
+      limit: 10
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: istiod
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '-40'
+spec:
+  project: platform
+  source:
+    repoURL: https://istio-release.storage.googleapis.com/charts
+    chart: istiod
+    targetRevision: 1.30.5
+    helm:
+      releaseName: istiod
+      valuesObject:
+        profile: ambient
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+    retry:
+      limit: 10
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: istio-cni
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '-40'
+spec:
+  project: platform
+  source:
+    repoURL: https://istio-release.storage.googleapis.com/charts
+    chart: cni
+    targetRevision: 1.30.5
+    helm:
+      releaseName: istio-cni
+      valuesObject:
+        profile: ambient
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+    retry:
+      limit: 10
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ztunnel
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '-30'
+spec:
+  project: platform
+  source:
+    repoURL: https://istio-release.storage.googleapis.com/charts
+    chart: ztunnel
+    targetRevision: 1.30.5
+    helm:
+      releaseName: ztunnel
+      valuesObject: {}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+    retry:
+      limit: 10
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: istio-ingress
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '-30'
+spec:
+  project: platform
+  source:
+    repoURL: https://istio-release.storage.googleapis.com/charts
+    chart: gateway
+    targetRevision: 1.30.5
+    helm:
+      releaseName: istio-ingress
+      valuesObject:
+        labels:
+          istio: ingressgateway
+        service:
+          type: NodePort
+          ports:
+          - name: http2
+            port: 80
+            targetPort: 80
+            nodePort: 30080
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+    retry:
+      limit: 10
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: goldenpath-runtime
+  namespace: argocd
+  annotations: {argocd.argoproj.io/sync-wave: "-20"}
+spec:
+  project: platform
+  source:
+    repoURL: {{ .Values.git.repoURL | quote }}
+    targetRevision: {{ .Values.git.revision | quote }}
+    path: platform/charts/config
+    helm:
+      releaseName: goldenpath-runtime
+      valuesObject:
+        {{- $values := deepCopy .Values }}
+        {{- $_ := set $values "stage" "runtime" }}
+        {{- toYaml $values | nindent 8 }}
+  destination: {server: 'https://kubernetes.default.svc', namespace: argocd}
+  syncPolicy:
+    automated: {prune: false, selfHeal: true}
+    syncOptions: [ServerSideApply=true]
+    retry:
+      limit: 15
+      backoff: {duration: 10s, factor: 2, maxDuration: 3m}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: goldenpath-resources
+  namespace: argocd
+  annotations: {argocd.argoproj.io/sync-wave: "-10"}
+spec:
+  project: platform
+  source:
+    repoURL: {{ .Values.git.repoURL | quote }}
+    targetRevision: {{ .Values.git.revision | quote }}
+    path: platform/charts/config
+    helm:
+      releaseName: goldenpath-resources
+      valuesObject:
+        {{- $values := deepCopy .Values }}
+        {{- $_ := set $values "stage" "resources" }}
+        {{- toYaml $values | nindent 8 }}
+  destination: {server: 'https://kubernetes.default.svc', namespace: argocd}
+  syncPolicy:
+    automated: {prune: false, selfHeal: true}
+    syncOptions: [ServerSideApply=true]
+    retry:
+      limit: 15
+      backoff: {duration: 10s, factor: 2, maxDuration: 3m}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: goldenpath-backstage
+  namespace: argocd
+  annotations: {argocd.argoproj.io/sync-wave: "0"}
+spec:
+  project: platform
+  source:
+    repoURL: {{ .Values.git.repoURL | quote }}
+    targetRevision: {{ .Values.git.revision | quote }}
+    path: platform/charts/config
+    helm:
+      releaseName: goldenpath-backstage
+      valuesObject:
+        {{- $values := deepCopy .Values }}
+        {{- $_ := set $values "stage" "backstage" }}
+        {{- toYaml $values | nindent 8 }}
+  destination: {server: 'https://kubernetes.default.svc', namespace: argocd}
+  syncPolicy:
+    automated: {prune: false, selfHeal: true}
+    syncOptions: [ServerSideApply=true]
+    retry:
+      limit: 15
+      backoff: {duration: 10s, factor: 2, maxDuration: 3m}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: goldenpath-applicationsets
+  namespace: argocd
+  annotations: {argocd.argoproj.io/sync-wave: "10"}
+spec:
+  project: platform
+  source:
+    repoURL: {{ .Values.git.repoURL | quote }}
+    targetRevision: {{ .Values.git.revision | quote }}
+    path: platform/charts/config
+    helm:
+      releaseName: goldenpath-applicationsets
+      valuesObject:
+        {{- $values := deepCopy .Values }}
+        {{- $_ := set $values "stage" "applicationsets" }}
+        {{- toYaml $values | nindent 8 }}
+  destination: {server: 'https://kubernetes.default.svc', namespace: argocd}
+  syncPolicy:
+    automated: {prune: false, selfHeal: true}
+    syncOptions: [ServerSideApply=true]
+    retry:
+      limit: 15
+      backoff: {duration: 10s, factor: 2, maxDuration: 3m}
