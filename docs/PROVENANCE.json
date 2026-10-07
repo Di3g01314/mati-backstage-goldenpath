@@ -4,7 +4,7 @@
   "review_date": "2026-10-06",
   "timezone": "America/Bogota",
   "source_visibility": "private",
-  "target_visibility": "private",
+  "target_visibility": "public",
   "source_hashes_not_target_checksums": {
     ".github/workflows/ci.yml": "0e331972bb038c38f9ebafb45c468e938a9b71b8c4107eef2273767bd08803ee",
     "cluster/values/grafana.yaml.tpl": "735fbc44c75f9e93d5ad939a8df5d879e8d91c48b3c20a5788f8f317db132d8d",

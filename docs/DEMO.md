@@ -20,3 +20,5 @@
 Ensayar OAuth usando la URL real de API Gateway con `/dev`. Preparar una vista limpia de Backstage, GitHub y Argo CD. La UI de Argo CD solo se abre por port-forward autorizado; no hacerla pública. Usar un nombre nuevo por toma para evitar colisiones. Las esperas de RDS se pueden acelerar en edición, rotulando claramente tiempo transcurrido; no simular éxito ni atribuir el resultado local a AWS.
 
 La prueba local permite grabar un adelanto del formulario y explicar la arquitectura, pero el video de extremo a extremo requiere desplegar y verificar la plataforma. No se ha realizado ese despliegue.
+
+Relacionar cada toma con la [matriz de evidencias de aceptación](EVIDENCIAS-ACEPTACION.md); registrar tiempos reales y estado del entorno.

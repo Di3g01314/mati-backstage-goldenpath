@@ -24,7 +24,7 @@ La entrada pública del portal usa **la URL HTTPS de API Gateway**, sin dominio 
 | `gitops/tenants/` | Solicitudes de infraestructura y registros de servicios |
 | `services/service-v0/` | Imagen genérica y pruebas de PostgreSQL |
 | `scripts/` | Validaciones, plan y operaciones futuras con bloqueo explícito |
-| `reference/legacy/` | Referencias originales; no se despliegan |
+| `reference/legacy/` | Referencias técnicas anonimizadas; no se despliegan |
 
 ## Validación local
 
@@ -46,6 +46,10 @@ Para explorar el portal localmente: `cd backstage && node .yarn/releases/yarn-4.
 
 ## Documentación
 
+- [Índice de documentación para el equipo](docs/README.md)
+- [Guía de inicio y contribución](docs/GUIA-EQUIPO.md)
+- [Cuatro vistas operativas](docs/vistas/README.md) y [decisiones de arquitectura](docs/adr/README.md)
+
 - [Cobertura de la guía y rúbrica](docs/COBERTURA-PROYECTO.md)
 - [Arquitectura y decisiones](docs/ARQUITECTURA.md)
 - [Preparación y secuencia del primer despliegue](docs/PREPARACION-DESPLIEGUE.md)
@@ -55,4 +59,4 @@ Para explorar el portal localmente: `cd backstage && node .yarn/releases/yarn-4.
 - [Inventario de reutilización](docs/INVENTARIO-REUTILIZACION.md) y [procedencia exacta](docs/PROVENANCE.json)
 - [Presentación de contexto](https://rubiod1.github.io/payments-network-platform-engineering/)
 
-Repositorio privado de GoldenPath. No contiene estados, contraseñas ni claves privadas. Los archivos PEM incluidos son certificados públicos de confianza de Amazon RDS.
+Repositorio público de GoldenPath; los repositorios que crea el Golden Path para cada servicio se configuran privados. No contiene estados, contraseñas ni claves privadas. Los archivos PEM incluidos son certificados públicos de confianza de Amazon RDS.

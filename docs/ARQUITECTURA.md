@@ -1,5 +1,7 @@
 # Arquitectura de GoldenPath
 
+Para el detalle operativo, consultar las [cuatro vistas](vistas/README.md). Las razones y alternativas están en los [ADRs](adr/README.md).
+
 ## Flujo de autoservicio
 
 ```mermaid
