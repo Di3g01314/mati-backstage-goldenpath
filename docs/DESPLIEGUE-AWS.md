@@ -23,6 +23,10 @@ La [guía de preparación y operación](PREPARACION-DESPLIEGUE.md) describe la s
 
 El ajuste de clase RDS respondió a un error real de capacidad y AWS confirmó la instancia alternativa disponible. Ambas clases micro ofrecen 2 vCPU y 1 GiB. La consulta de precios de AWS de esta ejecución dio USD 0,018/h para `db.t3.micro` frente a USD 0,016/h para `db.t4g.micro`: USD 0,002/h adicionales por base, sin incluir almacenamiento. Un Job temporal en el namespace `backstage`, usando la imagen del servicio v0 y el Secret sincronizado, ejecutó `SELECT 1` sobre la base `backstage` con `rejectUnauthorized=true` y el certificado raíz RDS. Resultado: `ok=true`, `tls=true`, `certificateVerified=true`. El Job no modificó datos. Las migraciones y el arranque de Backstage siguen pendientes.
 
+## Admisión del contrato en EKS
+
+Una solicitud `PostgreSQLInstance` válida fue aceptada mediante `kubectl apply --dry-run=server`. La misma solicitud con un propietario distinto de `piloto` fue rechazada por la regla `require-owner-cost-size`. No se persistieron recursos ni se creó una base para esta prueba. Esto verifica la admisión del contrato; el aprovisionamiento de RDS por Crossplane y el aislamiento de tráfico del piloto quedan pendientes del recorrido completo.
+
 ## Imágenes publicadas
 
 Los identificadores siguientes fueron confirmados en ECR. Son metadatos de artefactos; no contienen credenciales ni identificadores de cuenta.

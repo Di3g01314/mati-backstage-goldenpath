@@ -86,14 +86,21 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata: {name: goldenpath-database-contract}
 spec:
+  # Declare API defaults explicitly to keep Argo's structured merge comparison stable.
+  admission: true
   background: true
+  emitWarning: false
+  # The legacy fallback stays aligned with the rule's effective enforcement mode.
+  validationFailureAction: Enforce
   rules:
     - name: require-owner-cost-size
+      skipBackgroundRequests: true
       match:
         any:
           - resources:
               kinds: [platform.goldenpath.io/v1alpha1/PostgreSQLInstance]
       validate:
+        allowExistingViolations: true
         failureAction: Enforce
         message: La base debe pertenecer al equipo piloto, tener centro de costo y un tamaño permitido.
         pattern:

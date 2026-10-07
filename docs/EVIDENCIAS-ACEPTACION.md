@@ -7,7 +7,7 @@ Esta matriz conecta requisitos con verificaciones. Los resultados locales están
 | E01 | TVP responde a una fricción priorizada | Fuente anonimizada de tickets/entrevista y criterio de prioridad | Análisis del equipo documentado; muestra verificable pendiente |
 | E02 | Cimientos consistentes | fmt/validate, tests mock y plan con cuenta/región/commit registrados privadamente | Local: 7 tests; AWS aplicado y plan posterior sin cambios |
 | E03 | Formulario abstrae infraestructura | Dry-run de cuatro campos y revisión de los archivos generados | Local: 12 archivos; sin escrituras GitHub/AWS |
-| E04 | Solo se admiten solicitudes estándar | Caso válido y negativos de owner/costo/tamaño/namespace/archivos | Política: 7 tests; admisión local ensayada |
+| E04 | Solo se admiten solicitudes estándar | Caso válido y negativos de owner/costo/tamaño/namespace/archivos | Política: 7 tests; EKS dry-run acepta contrato válido y rechaza owner incorrecto |
 | E05 | Base y servicio se materializan | Task → repo/PR/check/merge → dos Applications → RDS Ready → Secret → Deployment | Pendiente AWS |
 | E06 | Credenciales automáticas y TLS | SELECT 1 con certificado verificado; no entrega manual por solicitud | Docker: caída/recuperación. AWS: ESO sincronizado y SELECT 1/TLS contra RDS de Backstage; RDS piloto pendiente |
 | E07 | Autoservicio completo | Cronómetro T0–T3 y conteo de intervenciones fuera del formulario | Pendiente; menos de 15 min es objetivo |
