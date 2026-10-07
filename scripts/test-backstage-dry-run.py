@@ -13,7 +13,7 @@ try:
  raise AssertionError('Users must not register arbitrary templates')
 except urllib.error.HTTPError as e:
  assert e.code==403,e.code
-source=root/'backstage/templates/microservice' 
+source=root/'backstage/templates/microservice'
 template=yaml.safe_load((source/'template.yaml').read_text())
 template['spec']['steps']=[s for s in template['spec']['steps'] if s['id'] in ['context','skeleton','infrastructure']]
 template['spec']['output']={}
