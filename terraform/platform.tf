@@ -96,6 +96,16 @@ data "aws_iam_policy_document" "crossplane" {
     actions   = ["rds:CreateDBInstance"]
     resources = [aws_db_subnet_group.pilot.arn]
   }
+  # RDS authorizes the default parameter and option groups during instance creation too.
+  # They are AWS defaults, so the instance's Project request tag must not be required here.
+  statement {
+    sid     = "UsePostgresDefaults"
+    actions = ["rds:CreateDBInstance"]
+    resources = [
+      "${local.account_arn}:rds:${var.aws_region}:${var.aws_account_id}:pg:default.postgres16",
+      "${local.account_arn}:rds:${var.aws_region}:${var.aws_account_id}:og:default:postgres-16"
+    ]
+  }
   statement {
     sid       = "TagOnlyPilotDatabases"
     actions   = ["rds:AddTagsToResource"]

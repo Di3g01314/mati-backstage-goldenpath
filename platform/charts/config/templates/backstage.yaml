@@ -74,6 +74,18 @@ spec:
   hosts: ['*']
   gateways: [backstage]
   http:
+    # API Gateway private integrations can preserve the stage in the backend path.
+    # Backstage serves /api and /static at its root; the public URL keeps /dev.
+    - match:
+        - uri: {exact: /dev}
+      rewrite: {uri: /}
+      route:
+        - destination: {host: backstage.backstage.svc.cluster.local, port: {number: 7007}}
+    - match:
+        - uri: {prefix: /dev/}
+      rewrite: {uri: /}
+      route:
+        - destination: {host: backstage.backstage.svc.cluster.local, port: {number: 7007}}
     - route:
         - destination: {host: backstage.backstage.svc.cluster.local, port: {number: 7007}}
 {{- end }}

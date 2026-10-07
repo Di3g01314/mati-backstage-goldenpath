@@ -37,6 +37,11 @@ spec:
   podSelector: {matchLabels: {goldenpath.io/workload: pilot}}
   policyTypes: [Ingress, Egress]
   ingress:
+    # Ambient identifies kubelet health probes with this link-local SNAT address.
+    # Permit only their port; namespace selectors do not match node-origin probes.
+    - from:
+        - ipBlock: {cidr: 169.254.7.127/32}
+      ports: [{port: 8080, protocol: TCP}]
     - from:
         - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: istio-system}}
         - podSelector: {matchLabels: {goldenpath.io/workload: pilot}}

@@ -41,7 +41,7 @@ flowchart LR
   Gateway --> Backstage[Backstage :7007]
 ```
 
-Se eligió API Gateway REST para asociar WAF regional. La URL pública incluye `/dev`; API Gateway elimina ese prefijo al enviar la petición al backend. Backstage genera URLs y callbacks con el prefijo externo. TLS termina en API Gateway; el tramo privado NLB/ingress/Backstage usa HTTP. Es una limitación deliberada de la demo, no cifrado extremo a extremo.
+Se eligió API Gateway REST para asociar WAF regional. La URL pública incluye `/dev`; si la integración privada conserva ese prefijo, el ingress lo elimina antes de enviar la petición a Backstage. También acepta las peticiones que ya llegan sin el prefijo. Backstage genera URLs y callbacks con el prefijo externo. TLS termina en API Gateway; el tramo privado NLB/ingress/Backstage usa HTTP. Es una limitación deliberada de la demo, no cifrado extremo a extremo.
 
 La autenticación GitHub la exige Backstage para sus APIs. Los recursos estáticos y callbacks de OAuth deben ser accesibles antes del login. No se configura un authorizer adicional en API Gateway. El catálogo de usuarios limita quién puede iniciar sesión; las acciones validan pertenencia al equipo. La política de permisos impide registrar ubicaciones/plantillas arbitrarias desde un usuario. Las credenciales de integración no se envían al navegador.
 
