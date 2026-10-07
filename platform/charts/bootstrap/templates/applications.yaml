@@ -87,9 +87,9 @@ spec:
     helm:
       releaseName: kyverno
       valuesObject:
-        crds:
+        kyverno-api:
           # A real label avoids perpetual drift from an empty map pruned by the API server.
-          customLabels:
+          labels:
             goldenpath.io/managed-by: platform
         admissionController:
           replicas: 1
