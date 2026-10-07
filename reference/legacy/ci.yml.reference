@@ -1,0 +1,51 @@
+name: CI - validacion sin AWS
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: "1.16.2"
+
+      - name: Terraform format
+        run: terraform fmt -check -recursive terraform
+
+      - name: Terraform init without AWS backend
+        working-directory: terraform
+        run: terraform init -backend=false -input=false -lockfile=readonly
+
+      - name: Terraform validate
+        working-directory: terraform
+        run: terraform validate -no-color
+
+      - name: Shell syntax
+        run: bash -n scripts/*.sh experiments/*.sh
+
+      - name: Grafana dashboard JSON
+        run: |
+          for file in grafana/*.json; do
+            python3 -m json.tool "$file" >/dev/null
+          done
+
+      - name: Repository checksums
+        run: sha256sum -c inventory/SHA256SUMS.txt

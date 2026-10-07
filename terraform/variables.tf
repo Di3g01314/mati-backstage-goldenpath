@@ -1,0 +1,75 @@
+variable "deployment_enabled" {
+  description = "Explicit deployment gate. Keep false during preparation."
+  type        = bool
+  default     = false
+}
+
+variable "aws_account_id" {
+  description = "Target account ID, explicitly supplied for this platform."
+  type        = string
+}
+
+variable "aws_region" {
+  description = "Target AWS region."
+  type        = string
+  default     = "us-east-1"
+}
+
+variable "resource_prefix" {
+  description = "Dedicated resource prefix."
+  type        = string
+  default     = "goldenpath-dev"
+}
+
+variable "owner" {
+  description = "Platform owner."
+  type        = string
+}
+
+variable "cost_center" {
+  description = "Academic project cost center."
+  type        = string
+}
+
+variable "availability_zones" {
+  description = "Three AZs matching the target region."
+  type        = list(string)
+  default     = ["us-east-1a", "us-east-1b", "us-east-1c"]
+}
+
+variable "kubernetes_version" {
+  description = "Supported Kubernetes version; select before deployment."
+  type        = string
+}
+
+variable "eks_addon_versions" {
+  description = "Exact compatible versions of four required EKS add-ons."
+  type        = map(string)
+}
+
+variable "eks_admin_principal_arns" {
+  description = "Explicit existing admin roles."
+  type        = map(string)
+}
+
+variable "eks_public_access_cidrs" {
+  description = "Admin CIDRs; empty is private-only and requires a VPC access path."
+  type        = list(string)
+  default     = []
+}
+
+variable "postgres_engine_version" {
+  description = "Available PostgreSQL 16 minor version; verify before deployment."
+  type        = string
+}
+
+variable "final_snapshot_suffix" {
+  description = "Unique final snapshot suffix for this lifecycle."
+  type        = string
+}
+
+variable "enable_portal_edge" {
+  description = "Optional portal transport; authentication and TLS design remain pending."
+  type        = bool
+  default     = false
+}

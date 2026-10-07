@@ -1,0 +1,19 @@
+# Preparation only. These placeholders must be replaced before any real plan.
+deployment_enabled = false
+aws_account_id = "000000000000"
+aws_region = "us-east-1"
+resource_prefix = "goldenpath-dev"
+owner = "equipo-plataforma"
+cost_center = "mati-arquitectura-plataformas"
+kubernetes_version = "REPLACE_WITH_SUPPORTED_VERSION"
+eks_addon_versions = {
+  coredns = "REPLACE_WITH_COMPATIBLE_VERSION"
+  kube-proxy = "REPLACE_WITH_COMPATIBLE_VERSION"
+  vpc-cni = "REPLACE_WITH_COMPATIBLE_VERSION"
+  eks-pod-identity-agent = "REPLACE_WITH_COMPATIBLE_VERSION"
+}
+eks_admin_principal_arns = { platform = "arn:aws:iam::000000000000:role/REPLACE_WITH_ADMIN_ROLE" }
+eks_public_access_cidrs = []
+postgres_engine_version = "REPLACE_WITH_POSTGRES_16_MINOR"
+final_snapshot_suffix = "REPLACE_WITH_UNIQUE_SUFFIX"
+enable_portal_edge = false

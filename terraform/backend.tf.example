@@ -1,0 +1,11 @@
+# Copy to backend.tf ONLY when a dedicated encrypted/versioned state bucket exists.
+# Backend configuration is intentionally absent during offline validation.
+terraform {
+  backend "s3" {
+    bucket = "REPLACE_WITH_NEW_GOLDENPATH_STATE_BUCKET"
+    key = "goldenpath/dev/terraform.tfstate"
+    region = "us-east-1"
+    encrypt = true
+    use_lockfile = true
+  }
+}
