@@ -21,5 +21,6 @@ pilot:
   databaseSecurityGroup: sg-0123456789abcdef0
   workloadSecurityGroup: sg-0123456789abcdef1
   postgresVersion: '16.15'
+  smallInstanceClass: db.t4g.micro
 stage: all
 awsResources: true

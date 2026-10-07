@@ -1,6 +1,6 @@
 # Primer despliegue: preparación y operación
 
-**No se ha desplegado en AWS.** La implementación y las pruebas previas están listas; las operaciones de esta página se ejecutan solo después de autorizar el despliegue y revisar el plan vigente.
+**El primer despliegue fue autorizado y está en curso desde el 7 de octubre de 2026.** El backend S3 está aplicado y el estado migrado; ya existen los cimientos de red y EKS, y las imágenes están publicadas. RDS, la incorporación de workers, Argo CD y la configuración de GitHub aún requieren seguimiento. Consultar el [registro de despliegue](DESPLIEGUE-AWS.md) antes de ejecutar o repetir pasos: esta página conserva la secuencia operativa y sus prerrequisitos, no representa una lista de operaciones todavía sin ejecutar. No se ha validado el portal ni el flujo completo en AWS.
 
 ## Datos externos pendientes
 
@@ -37,6 +37,18 @@ export GOLDENPATH_ALLOW_DEPLOY=1
 ./scripts/publish-images.sh
 PYTHON_BIN="$PWD/.venv/bin/python" ./scripts/bootstrap-platform.sh
 ```
+
+Si RDS devuelve falta de capacidad para `db.t4g.micro`, las variables `backstage_database_instance_class` y `pilot_small_database_instance_class` permiten `db.t3.micro` manteniendo el tamaño pequeño. Configurarlas en el archivo local de variables y revisar un nuevo plan; IAM y la composición reciben la misma selección. El cambio tiene un costo distinto y no reserva capacidad.
+
+Para avanzar mientras se completan RDS o las credenciales, con Argo CD ya instalado y el kubeconfig de GoldenPath disponible:
+
+```bash
+helm upgrade --install goldenpath-root platform/charts/bootstrap \
+  --namespace argocd --kubeconfig .generated/aws-kubeconfig \
+  --set controllersOnly=true --wait --timeout 5m
+```
+
+Ese modo instala únicamente las ocho Applications de controladores. El bootstrap completo carga los outputs reales y establece `controllersOnly=false` cuando los prerrequisitos estén listos. El éxito de Helm no confirma la salud de las Applications: verificarla en Argo CD.
 
 Entre apply y bootstrap: consultar `terraform output portal_url`, completar OAuth y escribir el valor del secreto GitHub creado por Terraform en Secrets Manager. JSON requerido:
 

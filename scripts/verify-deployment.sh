@@ -7,7 +7,7 @@ TASK_KUBECONFIG=${KUBECONFIG_GOLDENPATH:-"$ROOT_DIR/.generated/aws-kubeconfig"}
 KUBECTL=(kubectl --kubeconfig "$TASK_KUBECONFIG" --request-timeout=30s)
 "${KUBECTL[@]}" get nodes
 "${KUBECTL[@]}" -n argocd get applications
-"${KUBECTL[@]}" get providers.pkg.crossplane.io functions.pkg.crossplane.io
+"${KUBECTL[@]}" get providers.pkg.crossplane.io,functions.pkg.crossplane.io
 "${KUBECTL[@]}" -n backstage get externalsecrets
 "${KUBECTL[@]}" -n backstage rollout status deployment/backstage --timeout=120s
 "${KUBECTL[@]}" -n equipo-piloto get postgresqlinstances,deployments,services

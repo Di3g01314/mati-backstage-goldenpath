@@ -88,7 +88,7 @@ data "aws_iam_policy_document" "crossplane" {
     condition {
       test     = "StringEquals"
       variable = "rds:DatabaseClass"
-      values   = ["db.t4g.micro", "db.t4g.small"]
+      values   = [var.pilot_small_database_instance_class, "db.t4g.small"]
     }
   }
   statement {

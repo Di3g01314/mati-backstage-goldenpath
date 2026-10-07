@@ -15,5 +15,8 @@ eks_addon_versions = {
 eks_admin_principal_arns = { platform = "arn:aws:iam::000000000000:role/REPLACE_WITH_ADMIN_ROLE" }
 eks_public_access_cidrs = []
 postgres_engine_version = "16.15"
+# Keep the defaults unless AWS reports capacity unavailable for db.t4g.micro.
+backstage_database_instance_class = "db.t4g.micro"
+pilot_small_database_instance_class = "db.t4g.micro"
 final_snapshot_suffix = "REPLACE_WITH_UNIQUE_SUFFIX"
 enable_portal_edge = true

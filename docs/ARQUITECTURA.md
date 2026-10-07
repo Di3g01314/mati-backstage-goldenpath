@@ -53,6 +53,8 @@ PostgreSQL 16.15, almacenamiento cifrado y privado. Backstage usa una contraseñ
 
 El proveedor RDS v2.8.1 usa recursos namespaced `rds.aws.m.upbound.io/v1beta1`, `ClusterProviderConfig` con `source: PodIdentity`, service account estable y rol de AWS limitado al prefijo de las bases piloto. Crossplane genera el password y escribe `host`, `port`, `username`, `password` en `<servicio>-connection`; la aplicación utiliza la base `app`. Las composiciones pequeñas/medianas producen `db.t4g.micro`/`db.t4g.small`.
 
+Si AWS informa falta de capacidad para `db.t4g.micro`, las variables raíz `backstage_database_instance_class` y `pilot_small_database_instance_class` permiten seleccionar `db.t3.micro`, conservando 2 vCPU y 1 GiB de RAM. La segunda variable actualiza tanto el contrato pequeño de Crossplane como sus permisos IAM mediante los valores exportados de Terraform. El valor predeterminado sigue siendo Graviton; que una clase sea ordenable en la región no garantiza capacidad instantánea. El cambio de arquitectura de procesador de la base no requiere cambiar la imagen del cliente PostgreSQL.
+
 Las RDS del piloto tienen protección contra borrado y management policies que excluyen Delete. Borrar una solicitud no equivale a borrar la base. La retención evita pérdida accidental, pero requiere cierre explícito para no dejar costos residuales.
 
 ## Aislamiento
@@ -62,5 +64,7 @@ AppProjects separan plataforma, infraestructura piloto y servicios. El equipo no
 La interacción real entre EKS VPC CNI, Security Groups for Pods, NetworkPolicy e Istio se debe comprobar en AWS. Los dry-runs locales validan manifiestos y admisión, no tráfico de red ni credenciales temporales.
 
 ## Reconciliación inicial
+
+Istiod y el ingress usan una réplica fija en esta demo; el autoscaling está desactivado porque no se instala metrics-server.
 
 Helm instala Argo CD y el chart bootstrap con sus Applications. Como el bootstrap es Helm, las anotaciones de sync-wave no serializan por sí mismas todas las Applications iniciales: Argo reintenta mientras aparecen CRDs y dependencias. Los health checks y retry están configurados; antes de la demo se exige que todas las Applications estén Healthy/Synced. Los ApplicationSets solo despliegan solicitudes versionadas.

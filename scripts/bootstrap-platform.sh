@@ -13,6 +13,6 @@ kubectl --kubeconfig "$TASK_KUBECONFIG" get nodes --request-timeout=15s
 helm upgrade --install argocd argo-cd --repo https://argoproj.github.io/argo-helm --version 10.9.6 --namespace argocd --create-namespace --kubeconfig "$TASK_KUBECONFIG" -f "$ROOT_DIR/platform/argocd-values.yaml" --wait --timeout 10m
 # Seed private Git credentials once. External Secrets assumes lifecycle management later.
 "$PYTHON_BIN" "$ROOT_DIR/scripts/seed-argocd-credentials.py" "$VALUES" "$TASK_KUBECONFIG"
-helm upgrade --install goldenpath-root "$ROOT_DIR/platform/charts/bootstrap" --namespace argocd --kubeconfig "$TASK_KUBECONFIG" -f "$VALUES" --wait --timeout 5m
+helm upgrade --install goldenpath-root "$ROOT_DIR/platform/charts/bootstrap" --namespace argocd --kubeconfig "$TASK_KUBECONFIG" -f "$VALUES" --set controllersOnly=false --wait --timeout 5m
 # Remaining cluster resources are reconciled by Argo CD from Git.
 echo 'Bootstrap complete. Inspect Argo CD and wait for all platform applications to become Healthy.'

@@ -1,5 +1,5 @@
 {
-  "consulted_date": "2026-10-06",
+  "consulted_date": "2026-10-07",
   "timezone": "America/Bogota",
   "region": "us-east-1",
   "source": "AWS Price List Query API / GetProducts",
@@ -13,7 +13,7 @@
       "capacitystatus": "Used"
     },
     "rds": {
-      "instanceType": "db.t4g.micro",
+      "instanceType": "db.t3.micro",
       "location": "US East (N. Virginia)",
       "databaseEngine": "PostgreSQL",
       "deploymentOption": "Single-AZ"
@@ -31,12 +31,16 @@
     },
     {
       "service": "rds",
-      "sku": "9HPEGXQTDDGH53C9",
-      "usage_type": "InstanceUsage:db.t4g.micro",
+      "sku": "TGN7QDJF2AGFU9XA",
+      "usage_type": "InstanceUsage:db.t3.micro",
       "effective_date": "2026-10-01T00:00:00Z",
       "unit": "Hrs",
-      "usd": "0.0160000000",
-      "description": "$ 0.016 per RDS db.t4g.micro Single-AZ instance hour (or partial hour) running PostgreSQL"
+      "usd": "0.0180000000",
+      "description": "USD 0.018 per db.t3.micro Single-AZ instance hour (or partial hour) running PostgreSQL"
     }
-  ]
+  ],
+  "consulted_dates": {
+    "ec2": "2026-10-06",
+    "rds": "2026-10-07"
+  }
 }

@@ -87,6 +87,10 @@ spec:
     helm:
       releaseName: kyverno
       valuesObject:
+        kyverno-api:
+          # A real label avoids perpetual drift from an empty map pruned by the API server.
+          labels:
+            goldenpath.io/managed-by: platform
         admissionController:
           replicas: 1
   destination:
@@ -125,6 +129,14 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system
+  # Istiod injects its CA and switches this validator from Ignore to Fail when ready.
+  ignoreDifferences:
+  - group: admissionregistration.k8s.io
+    kind: ValidatingWebhookConfiguration
+    name: istiod-default-validator
+    jqPathExpressions:
+    - .webhooks[].clientConfig.caBundle
+    - .webhooks[].failurePolicy
   syncPolicy:
     automated:
       prune: false
@@ -132,6 +144,7 @@ spec:
     syncOptions:
     - CreateNamespace=true
     - ServerSideApply=true
+    - RespectIgnoreDifferences=true
     retry:
       limit: 10
       backoff:
@@ -156,9 +169,19 @@ spec:
       releaseName: istiod
       valuesObject:
         profile: ambient
+        autoscaleEnabled: false
+        replicaCount: 1
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system
+  # Preserve the CA and fail-closed policy managed by the running Istiod controller.
+  ignoreDifferences:
+  - group: admissionregistration.k8s.io
+    kind: ValidatingWebhookConfiguration
+    name: istio-validator-istio-system
+    jqPathExpressions:
+    - .webhooks[].clientConfig.caBundle
+    - .webhooks[].failurePolicy
   syncPolicy:
     automated:
       prune: false
@@ -166,6 +189,7 @@ spec:
     syncOptions:
     - CreateNamespace=true
     - ServerSideApply=true
+    - RespectIgnoreDifferences=true
     retry:
       limit: 10
       backoff:
@@ -256,6 +280,9 @@ spec:
     helm:
       releaseName: istio-ingress
       valuesObject:
+        autoscaling:
+          enabled: false
+        replicaCount: 1
         labels:
           istio: ingressgateway
         service:
@@ -282,6 +309,7 @@ spec:
         factor: 2
         maxDuration: 3m
 ---
+{{- if not .Values.controllersOnly }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -385,3 +413,4 @@ spec:
     retry:
       limit: 15
       backoff: {duration: 10s, factor: 2, maxDuration: 3m}
+{{- end }}

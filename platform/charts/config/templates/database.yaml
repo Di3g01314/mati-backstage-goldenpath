@@ -58,7 +58,7 @@ spec:
                   region: {{ .Values.aws.region }}
                   engine: postgres
                   engineVersion: {{ .Values.pilot.postgresVersion | quote }}
-                  instanceClass: db.t4g.micro
+                  instanceClass: {{ .Values.pilot.smallInstanceClass | quote }}
                   allocatedStorage: 20
                   storageType: gp3
                   storageEncrypted: true
@@ -114,7 +114,7 @@ spec:
                 toFieldPath: spec.forProvider.instanceClass
                 transforms:
                   - type: map
-                    map: {pequena: db.t4g.micro, mediana: db.t4g.small}
+                    map: {pequena: {{ .Values.pilot.smallInstanceClass | quote }}, mediana: db.t4g.small}
               - type: ToCompositeFieldPath
                 fromFieldPath: status.atProvider.address
                 toFieldPath: status.databaseEndpoint

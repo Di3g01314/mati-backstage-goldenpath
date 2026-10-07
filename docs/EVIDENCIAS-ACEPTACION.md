@@ -1,20 +1,20 @@
 # Evidencias de aceptación
 
-Esta matriz conecta requisitos con verificaciones. Los resultados locales están descritos en [VALIDACION](VALIDACION.md); la ejecución de GitHub Actions se consulta en el PR. **No hay evidencia E2E en AWS todavía.**
+Esta matriz conecta requisitos con verificaciones. Los resultados locales están descritos en [VALIDACION](VALIDACION.md); la ejecución de GitHub Actions se consulta en el PR. La [infraestructura AWS y conexión RDS](DESPLIEGUE-AWS.md) ya tienen evidencia real; el recorrido E2E desde Backstage sigue pendiente de la integración GitHub.
 
 | ID | Criterio | Evidencia exigida | Estado |
 |---|---|---|---|
 | E01 | TVP responde a una fricción priorizada | Fuente anonimizada de tickets/entrevista y criterio de prioridad | Análisis del equipo documentado; muestra verificable pendiente |
-| E02 | Cimientos consistentes | fmt/validate, tests mock y plan con cuenta/región/commit registrados privadamente | Local: 7 tests y plan 102 altas, 0 cambios/bajas |
+| E02 | Cimientos consistentes | fmt/validate, tests mock y plan con cuenta/región/commit registrados privadamente | Local: 7 tests; AWS aplicado y plan posterior sin cambios |
 | E03 | Formulario abstrae infraestructura | Dry-run de cuatro campos y revisión de los archivos generados | Local: 12 archivos; sin escrituras GitHub/AWS |
 | E04 | Solo se admiten solicitudes estándar | Caso válido y negativos de owner/costo/tamaño/namespace/archivos | Política: 7 tests; admisión local ensayada |
 | E05 | Base y servicio se materializan | Task → repo/PR/check/merge → dos Applications → RDS Ready → Secret → Deployment | Pendiente AWS |
-| E06 | Credenciales automáticas y TLS | SELECT 1 con certificado verificado; no entrega manual por solicitud | Docker: caída/recuperación probada; RDS real pendiente |
+| E06 | Credenciales automáticas y TLS | SELECT 1 con certificado verificado; no entrega manual por solicitud | Docker: caída/recuperación. AWS: ESO sincronizado y SELECT 1/TLS contra RDS de Backstage; RDS piloto pendiente |
 | E07 | Autoservicio completo | Cronómetro T0–T3 y conteo de intervenciones fuera del formulario | Pendiente; menos de 15 min es objetivo |
 | E08 | Catálogo con propiedad y estado | Component visible con owner/repo/estado real | Plantilla preparada; captura del entorno final pendiente |
 | E09 | Autonomía para actualizar servicio | Commit con imagen válida → Argo Synced → versión observada | Pendiente; construcción de imagen propia fuera de TVP |
 | E10 | Corrección de drift F3 | Campo administrado cambiado autorizadamente → restauración automática → antes/después | Pendiente AWS; no ejecutar durante preparación |
-| E11 | Aislamiento y permisos | Matriz de conexiones permitidas/denegadas y acceso limitado a APIs | Configurado; tráfico efectivo y Pod Identity pendientes EKS |
+| E11 | Aislamiento y permisos | Matriz de conexiones permitidas/denegadas y acceso limitado a APIs | ESO Pod Identity y conexión RDS Backstage verificados; aislamiento piloto y rol RDS de Crossplane pendientes |
 | E12 | APIs y evolución | Auditoría, contrato OpenAPI, fases y decisiones técnicas/financieras | Documentado; entidad API del catálogo pendiente |
 | E13 | Cierre controlado | Inventario final, retenciones, costos residuales y responsables | Runbook preparado; ejecución pendiente |
 
